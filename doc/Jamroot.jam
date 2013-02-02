@@ -1,0 +1,19 @@
+import quickbook ;
+using boostbook ;
+
+doxygen reference
+    :   ../cppan/cppan.hpp
+    :   <reftitle>"Reference"
+        <doxygen:param>PREDEFINED="DOXYGEN"
+        <doxygen:param>QUIET=YES
+        <doxygen:param>WARN_IF_UNDOCUMENTED=NO
+        <doxygen:param>HIDE_UNDOC_MEMBERS=YES
+        <doxygen:param>HIDE_UNDOC_CLASSES=YES
+        <doxygen:param>ALIASES=" Params=\"<b>Parameters:</b> <table border="0">\" Param{2}=\"<tr><td><b><tt>\\1</tt></b></td><td>\\2</td></tr>\" EndParams=\"</table>\" Returns=\"<b>Returns:</b>\" Note=\"<b>Note:</b>\" Warning=\"<b>Warning:</b>\" See=\"<b>See:</b>\" RefSect{2}=\"\\xmlonly<link linkend='scope_exit.\\1'>\\2</link>\\endxmlonly\" RefClass{1}=\"\\xmlonly<computeroutput><classname alt='\\1'>\\1</classname></computeroutput>\\endxmlonly\" RefFunc{1}=\"\\xmlonly<computeroutput><functionname alt='\\1'>\\1</functionname></computeroutput>\\endxmlonly\" RefMacro{1}=\"\\xmlonly<computeroutput><macroname alt='\\1'>\\1</macroname></computeroutput>\\endxmlonly\" "
+    ;
+
+xml qbk : cppan.qbk : <dependency>reference ;
+
+boostbook standalone : qbk
+    :   <xsl:param>nav.layout=none
+    ;

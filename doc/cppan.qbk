@@ -1,0 +1,66 @@
+[/ Copyright (C) 2013 Kozlov Taras ]
+[/ Distributed under the Boost Software License, Version 1.0 ]
+[/ (see accompanying file LICENSE_1_0.txt or a copy at ]
+[/ http://www.boost.org/LICENSE_1_0.txt) ]
+[/ Home at https://github.com/tarasko/cppan ]
+
+[library cppan
+    [quickbook 1.6]
+    [version 1.0]
+    [copyright 2013, Kozlov Taras]
+    [purpose Compile time arbitrary annotations for class members]
+    [license
+        Distributed under the Boost Software License, Version 1.0
+        (see accompanying file LICENSE_1_0.txt or a copy at
+        [@http://www.boost.org/LICENSE_1_0.txt])
+    ]
+    [authors 
+      [Kozlov <email>kozlov.taras@gmail.com</email>, Taras] 
+    ]
+    [source-mode c++]
+]
+
+[section Introduction]
+
+Lacking of introspection and annotations in C++ language is one of reasons that stops people from writing libraries with really convenient interface 
+in some specific domains. Those are: 
+
+* Mapping different data sources entities onto c++ class members. These particulary include mapping of database entities, and building orm libraries.
+* Distributed applications: objects must be serialized and restored with minimal efforts.
+
+There are two workarounds:
+
+* Whenever additional information abount fields and types are required, library can ship special template traits class. Develeper can specialize it to make 
+library work with his type correctly. This solution doesn`t involve additional preprocessing tools, however force to duplicate information about class members. 
+[@http://www.boost.org/doc/libs/1_52_0/libs/serialization/doc/tutorial.html#simplecase Boost.Serialization] is good example of such approach. You have to write 
+those *serialize* functions always. Other representative example is [@http://www.webtoolkit.eu/wt/doc/tutorial/dbo/tutorial.html#_mapping_a_single_class Wt.Dbo] project.
+* Additional preprocessing tools, that may use C++ parser to evaluate code structure and generate additional entities. Theses entities can be used to introspect 
+user objects in generic manner. However you need to get these tools installed, since then you can`t just use pure C++ compiler for your code.
+
+[macroref CPPAN_DECLARE_AND_ANNOTATE The link text]
+
+``
+    #include <iostream>
+
+    int main()
+    {
+        std::cout << "Hello, World!" << std::endl;
+        return 0;
+    }
+``
+
+[endsect]
+
+[section Second Section]
+``
+    #include <iostream>
+
+    int main()
+    {
+        std::cout << "Hello, World!" << std::endl;
+        return 0;
+    }
+``
+[endsect]
+
+[xinclude reference.xml]
