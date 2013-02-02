@@ -21,6 +21,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(sources
   cppan/cppan.hpp
+  cppan/detail/declare_and_annotate.hpp
   cppan/support/std_hash.hpp
   cppan/support/boost_hash.hpp
   cppan/support/boost_serialization.hpp

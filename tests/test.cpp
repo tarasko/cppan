@@ -1,5 +1,7 @@
 #include <cppan/cppan.hpp>
 
+#include <boost/mpl/assert.hpp>
+
 #include <iostream>
 #include <typeinfo>
 #include <string>
@@ -10,18 +12,25 @@ struct A
 {
     CPPAN_DECLARE_AND_ANNOTATE(
         ((int, int_field_,
-            ((int_annotation, 24.0))
-            ((string_annotation, "Privet"))
+            ((int_annotation, 24))
+            ((string_annotation, "Hello world"))
         ))
         ((std::string, string_field_,
             ((no_serialization, std::true_type()))
             ((no_hash, std::true_type()))
         ))
-        ((double, no_ann_field_, BOOST_PP_SEQ_NIL))
+        ((double, no_ann_field_, CPPAN_NIL_SEQ))
       )
 };
 
-CPPAN_DEFINE_MEMBER_DETECTOR(no_hash)
+CPPAN_DEFINE_MEMBER_DETECTOR(no_hash);
+
+BOOST_MPL_ASSERT((has_no_hash<A::annotations_for_string_field_>));
+BOOST_MPL_ASSERT_NOT((has_no_hash<A::annotations_for_int_field_>));
+BOOST_MPL_ASSERT_NOT((has_no_hash<int>));
+
+BOOST_MPL_ASSERT((cppan::has_annotations<A>));
+BOOST_MPL_ASSERT_NOT((cppan::has_annotations<int>));
 
 // case 1: we know field and want explicitly its annotations
 // typedef A::annotation_for_int_field annotations_type;
@@ -83,3 +92,4 @@ int main(int argc, char* argv[])
     
 	return 0;
 }
+
