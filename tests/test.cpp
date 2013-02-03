@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
     {
         std::ostringstream oss;
         boost::archive::text_oarchive oa(oss);
-        oa << a;
+        oa << const_cast<const A&>(a);
         data = oss.str();
     }
 

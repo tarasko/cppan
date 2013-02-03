@@ -50,7 +50,7 @@ void serialize(Archive& ar, AnnotatedTuple& t, const unsigned int version)
     using boost::mpl::_;
     using boost::mpl::not_;
 
-    return boost::fusion::for_each(
+    return for_each(
         filter_view<AnnotatedTuple, not_< has_no_serialization<_> > >(t)
       , serialize_visitor<Archive>(ar, version)
       );
