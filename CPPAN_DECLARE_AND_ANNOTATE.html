@@ -1,0 +1,63 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Macro CPPAN_DECLARE_AND_ANNOTATE</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Chapter&#160;1.&#160;cppan 1.0">
+<link rel="up" href="reference.html#header.cppan.cppan_hpp" title="Header &lt;cppan/cppan.hpp&gt;">
+<link rel="prev" href="cppan/has_annotations.html" title="Struct template has_annotations">
+<link rel="next" href="CPPAN_NIL_SEQ.html" title="Macro CPPAN_NIL_SEQ">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="spirit-nav">
+<a accesskey="p" href="cppan/has_annotations.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="reference.html#header.cppan.cppan_hpp"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="CPPAN_NIL_SEQ.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry">
+<a name="CPPAN_DECLARE_AND_ANNOTATE"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Macro CPPAN_DECLARE_AND_ANNOTATE</span></h2>
+<p>CPPAN_DECLARE_AND_ANNOTATE</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="reference.html#header.cppan.cppan_hpp" title="Header &lt;cppan/cppan.hpp&gt;">cppan/cppan.hpp</a>&gt;
+
+</span>CPPAN_DECLARE_AND_ANNOTATE(X)</pre></div>
+<div class="refsect1">
+<a name="idp9271232"></a><h2>Description</h2>
+<p>Declare and annotate member with specified types. Accept Boost.Preprocessor sequence of member field declaration. Each element in sequence must be Boost.Preprocessor tuple with 3 elements (member_type, member_name, sequence_of_annotations). </p>
+<pre class="programlisting"><span class="identifier">sequence_of_annotations</span> <span class="special">:</span><span class="special">=</span> <span class="identifier">sequence_of_annotations</span> <span class="special">|</span> <span class="identifier">CPPAN_NIL_SEQ</span>
+</pre>
+<p> <code class="computeroutput">CPPAN_NIL_SEQ</code> can be used if member doesn`t have annotations. <code class="computeroutput">sequence_of_annotations</code> - is Boost.Preprocessor sequence of tuples with 2 elements (annotation_name, annotation_runtime_value). </p>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">A</span>
+<span class="special">{</span>
+    <span class="identifier">CPPAN_DECLARE_AND_ANNOTATE</span><span class="special">(</span>
+        <span class="special">(</span><span class="special">(</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">int_field_</span><span class="special">,</span>
+            <span class="special">(</span><span class="special">(</span><span class="identifier">int_annotation</span><span class="special">,</span> <span class="number">24</span><span class="special">)</span><span class="special">)</span>
+            <span class="special">(</span><span class="special">(</span><span class="identifier">string_annotation</span><span class="special">,</span> <span class="string">"Privet"</span><span class="special">)</span><span class="special">)</span>
+        <span class="special">)</span><span class="special">)</span>
+        <span class="special">(</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">string_field_</span><span class="special">,</span>
+            <span class="special">(</span><span class="special">(</span><span class="identifier">no_serialization</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">true_type</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">)</span>
+            <span class="special">(</span><span class="special">(</span><span class="identifier">no_hash</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">true_type</span><span class="special">(</span><span class="special">)</span><span class="special">)</span><span class="special">)</span>
+        <span class="special">)</span><span class="special">)</span>
+        <span class="special">(</span><span class="special">(</span><span class="keyword">double</span><span class="special">,</span> <span class="identifier">no_ann_field_</span><span class="special">,</span> <span class="identifier">CPPAN_NIL_SEQ</span><span class="special">)</span><span class="special">)</span>
+      <span class="special">)</span>
+<span class="special">}</span><span class="special">;</span>
+</pre>
+<p> </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2013 Kozlov Taras<p>
+        Distributed under the Boost Software License, Version 1.0 (see accompanying
+        file LICENSE_1_0.txt or a copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="cppan/has_annotations.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="reference.html#header.cppan.cppan_hpp"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="CPPAN_NIL_SEQ.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

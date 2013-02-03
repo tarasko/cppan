@@ -1,0 +1,109 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Chapter&#160;1.&#160;cppan 1.0</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="Chapter&#160;1.&#160;cppan 1.0">
+<link rel="next" href="cppan/tutorial.html" title="Tutorial">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="spirit-nav"><a accesskey="n" href="cppan/tutorial.html"><img src="images/next.png" alt="Next"></a></div>
+<div class="chapter">
+<div class="titlepage"><div>
+<div><h2 class="title">
+<a name="cppan"></a>Chapter&#160;1.&#160;cppan 1.0</h2></div>
+<div><p class="copyright">Copyright &#169; 2013 Kozlov Taras</p></div>
+<div><div class="legalnotice">
+<a name="cppan.legal"></a><p>
+        Distributed under the Boost Software License, Version 1.0 (see accompanying
+        file LICENSE_1_0.txt or a copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></div>
+</div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="section"><a href="index.html#cppan.introduction">Introduction</a></span></dt>
+<dt><span class="section"><a href="cppan/tutorial.html">Tutorial</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="cppan/tutorial.html#cppan.tutorial.declaring_type_with_annotated_me">Declaring
+      type with annotated members</a></span></dt>
+<dt><span class="section"><a href="cppan/tutorial.html#cppan.tutorial.direct_access_to_members_and_ann">Direct
+      access to members and annotations</a></span></dt>
+<dt><span class="section"><a href="cppan/tutorial.html#cppan.tutorial.define_member_tester_metafunctio">Define
+      member tester metafunction</a></span></dt>
+<dt><span class="section"><a href="cppan/tutorial.html#cppan.tutorial.introspect_members_and_annotatio">Introspect
+      members and annotations</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="reference.html">Reference</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="reference.html#header.cppan.cppan_hpp">Header &lt;cppan/cppan.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="reference.html#header.cppan.support.boost_hash_hpp">Header &lt;cppan/support/boost_hash.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="reference.html#header.cppan.support.boost_serialization_hpp">Header &lt;cppan/support/boost_serialization.hpp&gt;</a></span></dt>
+</dl></dd>
+</dl>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="cppan.introduction"></a><a class="link" href="index.html#cppan.introduction" title="Introduction">Introduction</a>
+</h2></div></div></div>
+<p>
+      Lacking of introspection and annotations in C++ language is one of reasons
+      that stops people from writing libraries with really convenient interface in
+      some specific domains. Those are:
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Mapping different data sources entities onto c++ class members. These particulary
+          include mapping of database entities, and building orm libraries.
+        </li>
+<li class="listitem">
+          Distributed applications: objects must be serialized and restored with
+          minimal efforts.
+        </li>
+</ul></div>
+<p>
+      There are two workarounds:
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Whenever additional information abount members and types are required,
+          library can ship special template traits class. Develeper can specialize
+          it to make library work with his type correctly. This solution doesn`t
+          involve additional preprocessing tools, however force to duplicate information
+          about class members. <a href="http://www.boost.org/doc/libs/1_52_0/libs/serialization/doc/tutorial.html#simplecase" target="_top">Boost.Serialization</a>
+          is good example of such approach. You have to write those <span class="bold"><strong>serialize</strong></span>
+          functions always. Other representative example is <a href="http://www.webtoolkit.eu/wt/doc/tutorial/dbo/tutorial.html#_mapping_a_single_class" target="_top">Wt.Dbo</a>
+          project.
+        </li>
+<li class="listitem">
+          Additional preprocessing tools, that may use C++ parser to evaluate code
+          structure and generate additional entities. Theses entities can be used
+          to introspect user objects in generic manner. However you need to get these
+          tools installed, since then you can`t just use pure C++ compiler to process
+          your code. Examples are <a href="http://www.cpgf.org/" target="_top">cpgf library</a>,
+          <a href="http://qt-project.org/" target="_top">Qt</a> and <a href="http://www.codesynthesis.com/products/odb/" target="_top">odb</a>
+        </li>
+</ul></div>
+<p>
+      <br>
+    </p>
+<p>
+      The goal of cppan is to provide C++ constructs allowing to associate arbitrary
+      annotations with class members, introspect member is generic way and access
+      annotations during compile and runtime. Library also offer simple integration
+      with Boost.Serialization and Boost.Hash. cppan use <a href="http://www.boost.org/doc/libs/1_52_0/libs/preprocessor/doc/index.html" target="_top">Boost.Preprocessor</a>
+      and <a href="http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html" target="_top">Boost.Fusion</a>
+      to achieve that goal.
+    </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"><p><small>Last revised: February 03, 2013 at 15:22:17 GMT</small></p></td>
+<td align="right"><div class="copyright-footer"></div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav"><a accesskey="n" href="cppan/tutorial.html"><img src="images/next.png" alt="Next"></a></div>
+</body>
+</html>
