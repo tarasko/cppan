@@ -5,7 +5,6 @@
 [/ Home at https://github.com/tarasko/cppan ]
 
 [library cppan
-    [name C++ annotations library]
     [quickbook 1.6]
     [version 1.0]
     [copyright 2013, Kozlov Taras]
@@ -70,7 +69,7 @@ struct A
 ``
 
 [macroref CPPAN_DECLARE_AND_ANNOTATE] utilize [@http://www.boost.org/doc/libs/1_52_0/libs/preprocessor/doc/index.html Boost.Preprocessor] sequences to declare members, 
-and to declare sequence of annotations associated with each member. The code above effectively expands into following
+and sequence of annotations associated with each member. The code above effectively expands into following
 
 ``
 struct A
@@ -186,7 +185,7 @@ cout << "Value of int_annotation for A::int_field_" << a1.int_annotation << endl
 
 [section Define member tester metafunction]
 To determine if A::annotations_for_string_field_ has no_hash annotation, we need to define metafunction that check
-presence of no_hash member with [macroref CPPAN_DEFINE_MEMBER_DETECTOR].
+presence of no_hash member with [macroref CPPAN_DEFINE_MEMBER_DETECTOR]. 
 
 ``
 #include <boost/mpl/assert.hpp>
@@ -199,6 +198,13 @@ BOOST_MPL_ASSERT_NOT((has_no_hash<int>));
 ``
 
 [endsect]
+has_no_hash also contains specialization for [classref cppan::annotated_member annotated_member] class. In that case it will step into annotations type to check presence of 
+desired annotation.
+``
+BOOST_MPL_ASSERT((has_no_hash<cppan::annotated_member< std::string, A::annotations_for_string_field_> >));
+BOOST_MPL_ASSERT_NOT((has_no_hash<cppan::annotated_member< int, A::annotations_for_int_field_> >));
+``
+
 [section Introspect members and annotations]
 Power of [@http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html Boost.Fusion] can be applied to  members and annotations since 
 annotated_tuple return [@http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html Boost.Fusion] sequence.

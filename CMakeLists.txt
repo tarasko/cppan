@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 set(cppan_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "cppan include dirs")
 
-find_package(Boost 1.52.0 REQUIRED)
+find_package(Boost 1.52.0 COMPONENTS serialization REQUIRED)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 	message("cppan - STANDALONE mode")
@@ -34,3 +34,4 @@ foreach(src ${sources})
 endforeach(src ${sources})
 
 add_executable(cppan.unit_test ${sources} tests/test.cpp)
+target_link_libraries(cppan.unit_test ${Boost_LIBRARIES})

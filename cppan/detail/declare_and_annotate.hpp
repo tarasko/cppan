@@ -15,6 +15,10 @@
 #  include <boost/fusion/adapted/struct/define_struct_inline.hpp>
 #endif
 
+#if !defined(CPPAN_ENABLE_BOOST_SERIALIZATION)
+#  define CPPAN_ENABLE_BOOST_SERIALIZATION
+#endif
+
 // Define type that will be used for tuple. Better to use C++11 template aliasing instead of macro
 #define CPPAN_DETAIL_TUPLE_TYPE boost::fusion::vector
 

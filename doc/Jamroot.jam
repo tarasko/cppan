@@ -3,6 +3,8 @@ import quickbook ;
 
 doxygen reference
     :   ../cppan/cppan.hpp
+        ../cppan/support/boost_hash.hpp
+        ../cppan/support/boost_serialization.hpp
     :   <reftitle>"Reference"
         <doxygen:param>PREDEFINED="CPPAN_DOXYGEN"
         <doxygen:param>QUIET=YES
