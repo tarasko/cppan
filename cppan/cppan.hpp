@@ -1,14 +1,12 @@
 #if !defined(CPPAN_INCLUDED)
 #define CPPAN_INCLUDED
 
+#include <cppan/detail/declare_and_annotate.hpp>
+
 #include <boost/fusion/container/vector.hpp>
-#include <boost/fusion/algorithm/iteration/for_each.hpp>
-
-#if defined(CPPAN_USE_TUPLE_FOR_ANNOTATIONS)
-#  include <boost/fusion/adapted/struct/define_struct_inline.hpp>
-#endif
-
 #include <boost/mpl/has_xxx.hpp>
+#include <boost/mpl/if.hpp>
+#include <boost/type_traits/is_class.hpp>
 
 namespace cppan {
 
@@ -57,10 +55,16 @@ BOOST_MPL_HAS_XXX_TRAIT_NAMED_DEF(has_annotations, annotated_tag, false);
 
 /// Stolen from http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Member_Detector
 /// Define metafunction that detect presence of some member in structure
-#define CPPAN_DEFINE_MEMBER_DETECTOR(X)                                               \
+#define CPPAN_DEFINE_MEMBER_DETECTOR(X)                                             \
 template<typename T> class has_##X {                                                \
     struct Fallback { int X; };                                                     \
-    struct Derived : T, Fallback { };                                               \
+    struct Derived                                                                  \
+      : ::boost::mpl::if_<                                                          \
+            ::boost::is_class<T>                                                    \
+          , T                                                                       \
+          , ::boost::mpl::empty_base                                                \
+          >::type                                                                   \
+      , Fallback { };                                                               \
                                                                                     \
     template<typename U, U> struct Check;                                           \
                                                                                     \
@@ -72,8 +76,11 @@ template<typename T> class has_##X {                                            
   public:                                                                           \
     typedef has_##X type;                                                           \
     enum { value = sizeof(func<Derived>(0)) == 2 };                                 \
-};
-
+};                                                                                  \
+template<typename MemberType, typename AnnotationsType>                             \
+class has_##X<::cppan::annotated_member<MemberType, AnnotationsType> >              \
+    : public has_##X<AnnotationsType>                                               \
+{};
 
 }									// namespace cppan
 

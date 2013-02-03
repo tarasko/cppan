@@ -1,3 +1,6 @@
+#if !defined(CPPAN_DETAIL_DECLARE_AND_ANNOTATE_INCLUDED)
+#define CPPAN_DETAIL_DECLARE_AND_ANNOTATE_INCLUDED
+
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -7,6 +10,10 @@
 #include <boost/preprocessor/comma_if.hpp>
 #include <boost/preprocessor/identity.hpp>
 #include <boost/preprocessor/empty.hpp>
+
+#if defined(CPPAN_USE_TUPLE_FOR_ANNOTATIONS)
+#  include <boost/fusion/adapted/struct/define_struct_inline.hpp>
+#endif
 
 // Define type that will be used for tuple. Better to use C++11 template aliasing instead of macro
 #define CPPAN_DETAIL_TUPLE_TYPE boost::fusion::vector
@@ -68,3 +75,5 @@
 #define CPPAN_DETAIL_DECLARE_CONST_TUPLE_TYPE(X) \
     typedef CPPAN_DETAIL_TUPLE_TYPE<BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_ANNOTATED_MEMBER, BOOST_PP_IDENTITY(const), X)> const_annotated_tuple_type; \
     const_annotated_tuple_type annotated_tuple() const { return const_annotated_tuple_type(BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_ENUM_MEMBERS, _, X)); }
+
+#endif

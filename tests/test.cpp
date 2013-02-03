@@ -1,6 +1,8 @@
 #include <cppan/cppan.hpp>
+#include <cppan/support/boost_hash.hpp>
 
 #include <boost/mpl/assert.hpp>
+#include <boost/fusion/algorithm/iteration/for_each.hpp>
 
 #include <iostream>
 #include <typeinfo>
@@ -16,10 +18,10 @@ struct A
             ((string_annotation, "Hello world"))
         ))
         ((std::string, string_field_,
-            ((no_serialization, std::true_type()))
-            ((no_hash, std::true_type()))
+            ((no_serialization, 0))
+            ((no_hash, 0))
         ))
-        ((double, no_ann_field_, CPPAN_NIL_SEQ))
+        ((double, no_ann_field_, BOOST_PP_SEQ_NIL))
       )
 };
 
@@ -72,8 +74,8 @@ int main(int argc, char* argv[])
     // Use case 1:
     // явно обращаемс€ к члену и к типу содержащему его аннотации
     a.int_field_ = 100;
-    a.string_field_ = "string field";
-    a.no_ann_field_ = 20.;
+    a.string_field_ = "string field1";
+    a.no_ann_field_ = 22.;
 
     A::annotations_for_int_field_ a1;
     A::annotations_for_string_field_ a2;
@@ -90,6 +92,10 @@ int main(int argc, char* argv[])
     // ѕолучение членов структуры и св€занных с ними аннотаций в виде кортежа, 
     boost::fusion::for_each(a.annotated_tuple(), dump_members());
     
+    // Calculate hash
+    size_t hash_value = boost::hash_value(a);
+    cout << "Hash: " << hash_value << endl;
+
 	return 0;
 }
 
