@@ -69,17 +69,17 @@
 
 #endif
 
-// Produce ", member" or "member" if i is 0
-#define CPPAN_DETAIL_ENUM_MEMBERS(r, data, i, tup) BOOST_PP_COMMA_IF(i) CPPAN_DETAIL_L1_MEMBER(tup)
-
 #define CPPAN_DETAIL_ANNOTATED_MEMBER(r, const_or_empty, i, tup) BOOST_PP_COMMA_IF(i) ::cppan::annotated_member<const_or_empty() CPPAN_DETAIL_L1_TYPE(tup), CPPAN_DETAIL_ANN_NAME(tup)>
+
+// Produce ", member" or "member" if i is 0
+#define CPPAN_DETAIL_ENUM_MEMBERS(r, const_or_empty, i, tup) CPPAN_DETAIL_ANNOTATED_MEMBER(r, const_or_empty, i, tup)(CPPAN_DETAIL_L1_MEMBER(tup))
 
 #define CPPAN_DETAIL_DECLARE_MUTABLE_TUPLE_TYPE(X) \
     typedef CPPAN_DETAIL_TUPLE_TYPE<BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_ANNOTATED_MEMBER, BOOST_PP_EMPTY, X)> annotated_tuple_type; \
-    annotated_tuple_type annotated_tuple() { return annotated_tuple_type(BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_ENUM_MEMBERS, _, X)); }
+    annotated_tuple_type annotated_tuple() { return annotated_tuple_type(BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_ENUM_MEMBERS, BOOST_PP_EMPTY, X)); }
 
 #define CPPAN_DETAIL_DECLARE_CONST_TUPLE_TYPE(X) \
     typedef CPPAN_DETAIL_TUPLE_TYPE<BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_ANNOTATED_MEMBER, BOOST_PP_IDENTITY(const), X)> const_annotated_tuple_type; \
-    const_annotated_tuple_type annotated_tuple() const { return const_annotated_tuple_type(BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_ENUM_MEMBERS, _, X)); }
+    const_annotated_tuple_type annotated_tuple() const { return const_annotated_tuple_type(BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_ENUM_MEMBERS, BOOST_PP_IDENTITY(const), X)); }
 
 #endif

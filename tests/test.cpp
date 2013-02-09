@@ -15,7 +15,7 @@
 
 using namespace std;
 
-struct A
+struct B1
 {
     CPPAN_DECLARE_AND_ANNOTATE(
         ((int, int_field_,
@@ -29,63 +29,34 @@ struct A
         ((double, no_ann_field_, CPPAN_NIL_SEQ))
       )
 };
-//
-//struct B : A
-//{
-//    CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(
-//        (A),
-//        ((double, d1, CPPAN_NIL_SEQ))
-//      )
-//};
 
-//struct B : A
-//{
-//    typedef boost::mpl::vector< A   > base_types; 
-//    
-//    double d1;   
-//    
-//    struct annotations_for_d1 
-//    { 
-//        annotations_for_d1 ()   {}   
-//    };   
-//    
-//    typedef boost::fusion::vector< 
-//        ::cppan::annotated_member< double, annotations_for_d1>  
-//    > annotated_tuple_type; 
-//    
-//    annotated_tuple_type annotated_tuple() 
-//    { 
-//        return annotated_tuple_type(annotated_tuple_type::types::item0(d1)); 
-//    } 
-//    
-//    typedef boost::fusion::vector< 
-//        ::cppan::annotated_member<const  double, annotations_for_d1>  
-//    > const_annotated_tuple_type; 
-//    
-//    const_annotated_tuple_type annotated_tuple() const 
-//    { 
-//        return const_annotated_tuple_type( d1  ); 
-//    } 
-//    
-//    friend class boost::serialization::access; 
-//    
-//    template<typename Archive> void serialize(Archive& ar, const unsigned int version) 
-//    { 
-//        ::cppan::serialize(ar, annotated_tuple(), version); 
-//    }
-//};
+// Check that
+struct B2
+{
+    CPPAN_DECLARE_AND_ANNOTATE(
+        ((int, i1, CPPAN_NIL_SEQ))
+      )
+};
+
+struct D : B1, B2
+{
+    CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(
+        (B1)(B2),
+        ((double, d1, CPPAN_NIL_SEQ))
+      )
+};
 
 CPPAN_DEFINE_MEMBER_DETECTOR(no_hash);
 
-BOOST_MPL_ASSERT((has_no_hash<A::annotations_for_string_field_>));
-BOOST_MPL_ASSERT((has_no_hash<cppan::annotated_member< std::string, A::annotations_for_string_field_> >));
+BOOST_MPL_ASSERT((has_no_hash<B1::annotations_for_string_field_>));
+BOOST_MPL_ASSERT((has_no_hash<cppan::annotated_member< std::string, B1::annotations_for_string_field_> >));
 
-BOOST_MPL_ASSERT_NOT((has_no_hash<A::annotations_for_int_field_>));
-BOOST_MPL_ASSERT_NOT((has_no_hash<cppan::annotated_member< int, A::annotations_for_int_field_> >));
+BOOST_MPL_ASSERT_NOT((has_no_hash<B1::annotations_for_int_field_>));
+BOOST_MPL_ASSERT_NOT((has_no_hash<cppan::annotated_member< int, B1::annotations_for_int_field_> >));
 
 BOOST_MPL_ASSERT_NOT((has_no_hash<int>));
 
-BOOST_MPL_ASSERT((cppan::has_annotations<A>));
+BOOST_MPL_ASSERT((cppan::has_annotations<B1>));
 BOOST_MPL_ASSERT_NOT((cppan::has_annotations<int>));
 
 struct dump_members
@@ -100,25 +71,25 @@ struct dump_members
 
 int main(int argc, char* argv[])
 {
-    A a;
+    B1 b;
 
-    a.int_field_ = 100;
-    a.string_field_ = "string field1";
-    a.no_ann_field_ = 22.;
+    b.int_field_ = 100;
+    b.string_field_ = "string field1";
+    b.no_ann_field_ = 22.;
 
-    A::annotations_for_int_field_ a1;
-    A::annotations_for_string_field_ a2;
-    A::annotations_for_no_ann_field_ a3;
+    B1::annotations_for_int_field_ ann1;
+    B1::annotations_for_string_field_ ann2;
+    B1::annotations_for_no_ann_field_ ann3;
 
-    cout << "Value of int_annotation for A::int_field_" << a1.int_annotation << endl;    
+    cout << "Value of int_annotation for A::int_field_" << ann1.int_annotation << endl;    
 
-    cout << "has_annotations<A> = " << cppan::has_annotations<A>::value << endl;
+    cout << "has_annotations<A> = " << cppan::has_annotations<B1>::value << endl;
     cout << "has_annotations<int> = " << cppan::has_annotations<int>::value << endl;
 
-    boost::fusion::for_each(a.annotated_tuple(), dump_members());
+    boost::fusion::for_each(b.annotated_tuple(), dump_members());
     
     // Calculate hash
-    size_t hash_value = boost::hash_value(a);
+    size_t hash_value = boost::hash_value(b);
     cout << "Hash: " << hash_value << endl;
 
     // Serialize, deserialize object
@@ -126,15 +97,15 @@ int main(int argc, char* argv[])
     {
         std::ostringstream oss;
         boost::archive::text_oarchive oa(oss);
-        oa << const_cast<const A&>(a);
+        oa << const_cast<const B1&>(b);
         data = oss.str();
     }
 
-    A a_restored;
+    B1 b_restored;
     {
         std::istringstream iss(data);
         boost::archive::text_iarchive ia(iss);
-        ia >> a_restored;
+        ia >> b_restored;
     }
 
 	return 0;
