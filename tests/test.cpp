@@ -29,6 +29,51 @@ struct A
         ((double, no_ann_field_, CPPAN_NIL_SEQ))
       )
 };
+//
+//struct B : A
+//{
+//    CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(
+//        (A),
+//        ((double, d1, CPPAN_NIL_SEQ))
+//      )
+//};
+
+//struct B : A
+//{
+//    typedef boost::mpl::vector< A   > base_types; 
+//    
+//    double d1;   
+//    
+//    struct annotations_for_d1 
+//    { 
+//        annotations_for_d1 ()   {}   
+//    };   
+//    
+//    typedef boost::fusion::vector< 
+//        ::cppan::annotated_member< double, annotations_for_d1>  
+//    > annotated_tuple_type; 
+//    
+//    annotated_tuple_type annotated_tuple() 
+//    { 
+//        return annotated_tuple_type(annotated_tuple_type::types::item0(d1)); 
+//    } 
+//    
+//    typedef boost::fusion::vector< 
+//        ::cppan::annotated_member<const  double, annotations_for_d1>  
+//    > const_annotated_tuple_type; 
+//    
+//    const_annotated_tuple_type annotated_tuple() const 
+//    { 
+//        return const_annotated_tuple_type( d1  ); 
+//    } 
+//    
+//    friend class boost::serialization::access; 
+//    
+//    template<typename Archive> void serialize(Archive& ar, const unsigned int version) 
+//    { 
+//        ::cppan::serialize(ar, annotated_tuple(), version); 
+//    }
+//};
 
 CPPAN_DEFINE_MEMBER_DETECTOR(no_hash);
 

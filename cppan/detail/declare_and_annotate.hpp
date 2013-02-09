@@ -22,6 +22,8 @@
 // Define type that will be used for tuple. Better to use C++11 template aliasing instead of macro
 #define CPPAN_DETAIL_TUPLE_TYPE boost::fusion::vector
 
+#define CPPAN_DETAIL_REPEAT_SEQ(r, data, i, elem) BOOST_PP_COMMA_IF(i) elem
+
 // Accessors for top level tuple
 #define CPPAN_DETAIL_L1_TYPE(tup) BOOST_PP_TUPLE_ELEM(3, 0, tup)
 #define CPPAN_DETAIL_L1_MEMBER(tup) BOOST_PP_TUPLE_ELEM(3, 1, tup)
