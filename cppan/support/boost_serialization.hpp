@@ -1,7 +1,7 @@
 #if !defined(CPPAN_SUPPORT_BOOST_SERIALIZATION_INCLUDED)
 #define CPPAN_SUPPORT_BOOST_SERIALIZATION_INCLUDED
 
-#include <cppan/cppan.hpp>
+#include <cppan/define_member_detector.hpp>
 
 #include <boost/utility/enable_if.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
@@ -36,7 +36,7 @@ CPPAN_DEFINE_MEMBER_DETECTOR(no_serialization);
     template<typename Archive> \
     void serialize(Archive& ar, const unsigned int version) \
     { \
-        ::cppan::serialize(ar, annotated_tuple(), version); \
+        ::cppan::serialize(ar, *this, version); \
     }
 
 #endif

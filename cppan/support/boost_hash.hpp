@@ -1,7 +1,7 @@
 #if !defined(CPPAN_SUPPORT_BOOST_HASH_INCLUDED)
 #define CPPAN_SUPPORT_BOOST_HASH_INCLUDED
 
-#include <cppan/cppan.hpp>
+#include <cppan/all.hpp>
 
 #include <boost/functional/hash.hpp>
 #include <boost/fusion/view/filter_view.hpp>
@@ -42,10 +42,8 @@ std::size_t hash_value(T& obj, typename boost::enable_if< ::cppan::has_annotatio
     using boost::mpl::_;
     using boost::mpl::not_;
 
-    typedef typename ::cppan::annotated_tuple_type<T>::type annotated_tuple_type;
-
     return accumulate(
-        filter_view<annotated_tuple_type, not_< has_no_hash<_> > >(obj.annotated_tuple())
+        filter_view<T, not_< has_no_hash<_> > >(obj)
       , size_t(0)
       , hash_value_visitor()
       );

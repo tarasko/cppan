@@ -1,4 +1,4 @@
-#include <cppan/cppan.hpp>
+#include <cppan/all.hpp>
 #include <cppan/support/boost_hash.hpp>
 #include <cppan/support/boost_serialization.hpp>
 
@@ -18,6 +18,7 @@ using namespace std;
 struct B1
 {
     CPPAN_DECLARE_AND_ANNOTATE(
+        B1,
         ((int, int_field_,
             ((int_annotation, 24))
             ((string_annotation, "Hello world"))
@@ -34,14 +35,16 @@ struct B1
 struct B2
 {
     CPPAN_DECLARE_AND_ANNOTATE(
+        B2,
         ((int, i1, CPPAN_NIL_SEQ))
       )
 };
 
-struct D : B1, B2
+struct D : B2
 {
     CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(
-        (B1)(B2),
+        D,
+        (B2),
         ((double, d1, CPPAN_NIL_SEQ))
       )
 };
@@ -49,10 +52,10 @@ struct D : B1, B2
 CPPAN_DEFINE_MEMBER_DETECTOR(no_hash);
 
 BOOST_MPL_ASSERT((has_no_hash<B1::annotations_for_string_field_>));
-BOOST_MPL_ASSERT((has_no_hash<cppan::annotated_member< std::string, B1::annotations_for_string_field_> >));
+BOOST_MPL_ASSERT((has_no_hash<cppan::member< std::string, B1::annotations_for_string_field_> >));
 
 BOOST_MPL_ASSERT_NOT((has_no_hash<B1::annotations_for_int_field_>));
-BOOST_MPL_ASSERT_NOT((has_no_hash<cppan::annotated_member< int, B1::annotations_for_int_field_> >));
+BOOST_MPL_ASSERT_NOT((has_no_hash<cppan::member< int, B1::annotations_for_int_field_> >));
 
 BOOST_MPL_ASSERT_NOT((has_no_hash<int>));
 
@@ -62,7 +65,7 @@ BOOST_MPL_ASSERT_NOT((cppan::has_annotations<int>));
 struct dump_members
 {
     template<typename MemberType, typename AnnotationsType>
-    void operator()(const cppan::annotated_member<MemberType, AnnotationsType>& member) const
+    void operator()(const cppan::member<MemberType, AnnotationsType>& member) const
     {
         cout << "Member value: " << member.value_ << endl;
         cout << "\tHas no_hash annotation: " << has_no_hash<AnnotationsType>::value << endl;
@@ -81,13 +84,16 @@ int main(int argc, char* argv[])
     B1::annotations_for_string_field_ ann2;
     B1::annotations_for_no_ann_field_ ann3;
 
-    cout << "Value of int_annotation for A::int_field_" << ann1.int_annotation << endl;    
+    cout << "Value of int_annotation for A::int_field_ " << ann1.int_annotation << endl;    
 
     cout << "has_annotations<A> = " << cppan::has_annotations<B1>::value << endl;
     cout << "has_annotations<int> = " << cppan::has_annotations<int>::value << endl;
 
-    boost::fusion::for_each(b.annotated_tuple(), dump_members());
+    boost::fusion::for_each(b, dump_members());
     
+    const B1& b1 = b;
+    boost::fusion::for_each(b, dump_members());
+
     // Calculate hash
     size_t hash_value = boost::hash_value(b);
     cout << "Hash: " << hash_value << endl;
@@ -107,6 +113,9 @@ int main(int argc, char* argv[])
         boost::archive::text_iarchive ia(iss);
         ia >> b_restored;
     }
+
+    D d;
+    cppan::aggregate(d);
 
 	return 0;
 }
