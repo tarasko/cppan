@@ -36,16 +36,16 @@ struct B2
 {
     CPPAN_DECLARE_AND_ANNOTATE(
         B2,
-        ((int, i1, CPPAN_NIL_SEQ))
+        ((int, b2_mem, CPPAN_NIL_SEQ))
       )
 };
 
-struct D : B2
+struct D : B1, B2
 {
     CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(
         D,
-        (B2),
-        ((double, d1, CPPAN_NIL_SEQ))
+        (B1)(B2),
+        ((double, d_mem, CPPAN_NIL_SEQ))
       )
 };
 
@@ -115,6 +115,11 @@ int main(int argc, char* argv[])
     }
 
     D d;
+    d.d_mem = 10.;
+    d.b2_mem = 20;
+    d.int_field_ = 42;
+    d.no_ann_field_ = 15.;
+    d.string_field_ = "fuck";
     cppan::aggregate(d);
 
 	return 0;

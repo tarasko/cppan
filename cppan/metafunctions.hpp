@@ -5,8 +5,6 @@
 #include <boost/mpl/transform.hpp>
 #include <boost/type_traits/add_const.hpp>
 
-#include <iosfwd>
-
 namespace cppan {
 
     namespace detail 
@@ -35,13 +33,6 @@ namespace cppan {
 
         member(MemberType& value) : value_(value) {}
     };
-
-    template<typename MemberType, typename AnnotationsType, typename Char, typename Traits>
-    std::basic_ostream<Char, Traits>& operator<<(std::basic_ostream<Char, Traits>& os, const member<MemberType, AnnotationsType>& m)
-    {
-        os << m.value_;
-        return os;
-    }
 
     template<typename T, typename Member, Member T::*MemberPtr, typename Annotations>
     struct member_shortcut

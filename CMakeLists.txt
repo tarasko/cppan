@@ -25,6 +25,7 @@ set(sources
   cppan/declare_and_annotate.hpp
   cppan/define_member_detector.hpp
   cppan/metafunctions.hpp
+  cppan/io.hpp
   cppan/detail/fusion_extension.hpp
   cppan/support/boost_hash.hpp
   cppan/support/boost_serialization.hpp

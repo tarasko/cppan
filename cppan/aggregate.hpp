@@ -50,31 +50,17 @@ struct join
     }
 };
 
-struct tester
-{
-    template<typename T>
-    void operator()(T& v) const
-    {
-        std::cout << typeid(T&).name() << std::endl;
-        std::cout << v << std::endl;
-    }
-};
-
 /// Return tuple of members and annotations aggregated over all base types and class itself.
 template<typename T>
 void aggregate(T& obj, typename boost::enable_if< has_annotations<T> >::type* = 0)
 {
     typedef typename base_types<T>::type base_types;
 
-    std::cout << obj;
     // Declare transform view that will return view with annotated_tuples for base types
     boost::fusion::transform_view< base_types, tuple_extractor<T> > base_tuples_view((base_types()), tuple_extractor<T>(obj));
-    //boost::fusion::for_each(base_tuples_view, tester());
-
-    // std::cout << base_tuples_view << std::endl;
 
     // Accumulate annotated tuples for base types
-    //auto res = boost::fusion::accumulate(base_tuples_view, obj, join()); 
+    auto res = boost::fusion::accumulate(base_tuples_view, obj, join()); 
 }
 
 }
