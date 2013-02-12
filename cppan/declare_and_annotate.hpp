@@ -160,7 +160,7 @@ struct join_all_shortcuts
 #  endif
 
 // Produce ", member" or "member" if i is 0
-#  define CPPAN_DETAIL_SHORTCUT(r, self, i, tup) BOOST_PP_COMMA_IF(i) ::cppan::member_shortcut<self, CPPAN_DETAIL_L1_TYPE(tup), &self::CPPAN_DETAIL_L1_MEMBER(tup), CPPAN_DETAIL_ANN_NAME(tup)>
+#  define CPPAN_DETAIL_SHORTCUT(r, self, i, tup) BOOST_PP_COMMA_IF(i) ::cppan::detail::member_shortcut<self, CPPAN_DETAIL_L1_TYPE(tup), &self::CPPAN_DETAIL_L1_MEMBER(tup), CPPAN_DETAIL_ANN_NAME(tup)>
 
 #  define CPPAN_DETAIL_DECLARE_MEMBER_SHORTCUTS(X) \
     template<typename T> \

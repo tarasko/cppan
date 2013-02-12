@@ -21,11 +21,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(sources
   cppan/all.hpp
-  cppan/aggregate.hpp
   cppan/declare_and_annotate.hpp
   cppan/define_member_detector.hpp
-  cppan/metafunctions.hpp
+  cppan/has_annotations.hpp
+  cppan/member.hpp
   cppan/io.hpp
+  cppan/detail/metafunctions.hpp
   cppan/detail/fusion_extension.hpp
   cppan/support/boost_hash.hpp
   cppan/support/boost_serialization.hpp

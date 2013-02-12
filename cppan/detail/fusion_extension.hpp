@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cppan/metafunctions.hpp>
+#include <cppan/detail/metafunctions.hpp>
+#include <cppan/has_annotations.hpp>
 
 #include <boost/fusion/support/tag_of_fwd.hpp>
 #include <boost/fusion/support/category_of.hpp>
@@ -98,7 +99,7 @@ namespace boost { namespace fusion {
                 typedef ::cppan::detail::sequence_iterator<
                     Sequence
                   , boost::mpl::size<
-                        typename ::cppan::member_shortcut_types<Sequence>::type
+                        typename ::cppan::detail::member_shortcut_types<Sequence>::type
                       >::type::value
                   > type;
 
@@ -116,7 +117,7 @@ namespace boost { namespace fusion {
             template<typename Sequence>
             struct apply
                 : boost::mpl::size<
-                    typename ::cppan::member_shortcut_types<Sequence>::type
+                    typename ::cppan::detail::member_shortcut_types<Sequence>::type
                   >::type
             {};
         };
@@ -178,7 +179,7 @@ namespace boost { namespace fusion {
             struct apply< ::cppan::detail::sequence_iterator<Sequence, Pos> >
             {
                 typedef typename boost::mpl::at_c<
-                    typename cppan::member_shortcut_types<Sequence>::type
+                    typename cppan::detail::member_shortcut_types<Sequence>::type
                   , Pos
                   >::type::deref_type type;
             };
@@ -194,7 +195,7 @@ namespace boost { namespace fusion {
             struct apply< ::cppan::detail::sequence_iterator<CppanType, Pos> >
             {
                 typedef typename boost::mpl::at_c<
-                    typename cppan::member_shortcut_types<CppanType>::type
+                    typename cppan::detail::member_shortcut_types<CppanType>::type
                   , Pos
                   >::type shortcut_type;
         

@@ -1,7 +1,8 @@
 #if !defined(CPPAN_IO_INCLUDED)
 #define CPPAN_IO_INCLUDED
 
-#include <cppan/metafunctions.hpp>
+#include <cppan/has_annotations.hpp>
+
 #include <boost/fusion/sequence/io/in.hpp>
 #include <boost/fusion/sequence/io/out.hpp>
 
@@ -33,6 +34,5 @@ std::basic_ostream<Char, Traits>& operator<<(std::basic_ostream<Char, Traits>& o
 }
 
 }
-
 
 #endif // !defined(CPPAN_IO_INCLUDED)

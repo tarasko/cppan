@@ -1,6 +1,10 @@
 #pragma once
 
-#include <cppan/metafunctions.hpp>
+#include <cppan/member.hpp>
+
+#include <boost/mpl/if.hpp>
+#include <boost/mpl/empty_base.hpp>
+#include <boost/type_traits/is_class.hpp>
 
 /// Stolen from http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Member_Detector
 /// Define metafunction that detect presence of some member in structure.

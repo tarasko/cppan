@@ -3,15 +3,8 @@
 #include <cppan/support/boost_serialization.hpp>
 
 #include <boost/mpl/assert.hpp>
-#include <boost/mpl/insert_range.hpp>
-#include <boost/mpl/accumulate.hpp>
 #include <boost/mpl/begin.hpp>
-#include <boost/mpl/empty_sequence.hpp>
 #include <boost/mpl/identity.hpp>
-#include <boost/mpl/joint_view.hpp>
-#include <boost/mpl/transform_view.hpp>
-#include <boost/mpl/single_view.hpp>
-#include <boost/mpl/for_each.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
 #include <boost/fusion/adapted/mpl.hpp>
 #include <boost/serialization/string.hpp>
