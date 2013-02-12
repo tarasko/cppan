@@ -3,7 +3,17 @@
 #include <cppan/support/boost_serialization.hpp>
 
 #include <boost/mpl/assert.hpp>
+#include <boost/mpl/insert_range.hpp>
+#include <boost/mpl/accumulate.hpp>
+#include <boost/mpl/begin.hpp>
+#include <boost/mpl/empty_sequence.hpp>
+#include <boost/mpl/identity.hpp>
+#include <boost/mpl/joint_view.hpp>
+#include <boost/mpl/transform_view.hpp>
+#include <boost/mpl/single_view.hpp>
+#include <boost/mpl/for_each.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
+#include <boost/fusion/adapted/mpl.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -18,7 +28,6 @@ using namespace std;
 struct B1
 {
     CPPAN_DECLARE_AND_ANNOTATE(
-        B1,
         ((int, int_field_,
             ((int_annotation, 24))
             ((string_annotation, "Hello world"))
@@ -35,7 +44,6 @@ struct B1
 struct B2
 {
     CPPAN_DECLARE_AND_ANNOTATE(
-        B2,
         ((int, b2_mem, CPPAN_NIL_SEQ))
       )
 };
@@ -43,7 +51,6 @@ struct B2
 struct D : B1, B2
 {
     CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(
-        D,
         (B1)(B2),
         ((double, d_mem, CPPAN_NIL_SEQ))
       )
@@ -64,11 +71,11 @@ BOOST_MPL_ASSERT_NOT((cppan::has_annotations<int>));
 
 struct dump_members
 {
-    template<typename MemberType, typename AnnotationsType>
-    void operator()(const cppan::member<MemberType, AnnotationsType>& member) const
+    template<typename T>
+    void operator()(T& member) const
     {
-        cout << "Member value: " << member.value_ << endl;
-        cout << "\tHas no_hash annotation: " << has_no_hash<AnnotationsType>::value << endl;
+        cout << typeid(T).name() << ": Member value: " << member.value_ << endl;
+        cout << "\tHas no_hash annotation: " << has_no_hash<typename T::annotations_type>::value << endl;
     }
 };
 
@@ -115,12 +122,15 @@ int main(int argc, char* argv[])
     }
 
     D d;
-    d.d_mem = 10.;
-    d.b2_mem = 20;
     d.int_field_ = 42;
     d.no_ann_field_ = 15.;
     d.string_field_ = "fuck";
-    cppan::aggregate(d);
+    d.b2_mem = 20;
+    d.d_mem = 10.;
+
+    cout << "D = " << d << endl;
+    cout << "D const = " << (const D&)d << endl;
+
 
 	return 0;
 }

@@ -3,9 +3,11 @@
 
 #include <cppan/metafunctions.hpp>
 #include <cppan/detail/fusion_extension.hpp>
+#include <cppan/io.hpp>
 
 #include <boost/fusion/view/transform_view.hpp>
 #include <boost/fusion/view/joint_view.hpp>
+#include <boost/fusion/algorithm/iteration/accumulate.hpp>
 #include <boost/fusion/sequence/io.hpp>
 
 namespace cppan {
@@ -38,7 +40,7 @@ struct join
     struct result;
 
     template<typename S, typename T>
-    struct result< join(S, T) >
+    struct result< join(S&, T&) >
     {
         typedef boost::fusion::joint_view<S, T> type;
     };
@@ -61,6 +63,7 @@ void aggregate(T& obj, typename boost::enable_if< has_annotations<T> >::type* = 
 
     // Accumulate annotated tuples for base types
     auto res = boost::fusion::accumulate(base_tuples_view, obj, join()); 
+    std::cout << res << std::endl;
 }
 
 }

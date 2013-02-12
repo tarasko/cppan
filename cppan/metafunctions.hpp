@@ -76,18 +76,18 @@ namespace cppan {
     };
 
     template<typename T>
-    struct base_types<T const> : boost::mpl::transform< typename T::base_types, boost::add_const<boost::mpl::_> >
+    struct base_types<const T> : boost::mpl::transform< typename T::base_types, boost::add_const<boost::mpl::_> >
     {    
     };
 
     template<typename T>
     struct member_shortcut_types
     {
-        typedef typename T::get_member_shortcuts<T>::type type;
+        typedef typename T::template apply<T>::type type;
     };
 
     template<typename T>
-    struct member_shortcut_types<T const> : boost::mpl::transform< typename T::get_member_shortcuts<T>::type, detail::make_constant_shortcut >
+    struct member_shortcut_types<T const> : boost::mpl::transform< typename T::template apply<T>::type, detail::make_constant_shortcut >
     {
     };
 

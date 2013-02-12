@@ -13,7 +13,13 @@
 #include <boost/preprocessor/identity.hpp>
 #include <boost/preprocessor/empty.hpp>
 
+#include <boost/mpl/transform_view.hpp>
+#include <boost/mpl/joint_view.hpp>
+#include <boost/mpl/single_view.hpp>
+#include <boost/mpl/accumulate.hpp>
+#include <boost/mpl/insert_range.hpp>
 #include <boost/mpl/vector.hpp>
+#include <boost/mpl/end.hpp>
 
 #if defined(CPPAN_USE_TUPLE_FOR_ANNOTATIONS)
 #  include <boost/fusion/adapted/struct/define_struct_inline.hpp>
@@ -22,6 +28,25 @@
 #if !defined(CPPAN_ENABLE_BOOST_SERIALIZATION)
 #  define CPPAN_ENABLE_BOOST_SERIALIZATION
 #endif
+
+namespace cppan { namespace detail {
+
+template<typename BaseTypes, typename SelfShortcuts>
+struct join_all_shortcuts
+{
+    typedef typename boost::mpl::transform_view< 
+        BaseTypes
+      , boost::mpl::apply1<boost::mpl::_1, boost::mpl::_1> 
+      > base_shortcuts_view;
+
+    typedef typename boost::mpl::accumulate< 
+        typename boost::mpl::joint_view< base_shortcuts_view, boost::mpl::single_view<SelfShortcuts> >::type
+      , boost::mpl::vector0<>
+      , boost::mpl::insert_range<boost::mpl::_1, boost::mpl::end<boost::mpl::_1>, boost::mpl::_2>
+      >::type type;
+};
+
+}}
 
 /// Declare and annotate members with specified types. Accept Boost.Preprocessor sequence of member field declaration.
 /// Each element in sequence must be Boost.Preprocessor tuple with 3 elements (member_type, member_name, sequence_of_annotations).
@@ -34,7 +59,6 @@
 ///struct D : B1, B2
 ///{
 ///    CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(
-///        D,
 ///        (B1)(B2),
 ///        ((int, int_field_,
 ///            ((int_annotation, 24))
@@ -48,11 +72,11 @@
 ///      )
 ///};
 /// @endcode
-#define CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(Self, BasesSeq, MembersTuple) \
+#define CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(BasesSeq, MembersTuple) \
     typedef boost::mpl::vector<BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_REPEAT_SEQ, _, BasesSeq)> base_types; \
     BOOST_PP_SEQ_FOR_EACH_R(1, CPPAN_DETAIL_DECLARE_MEMBER, _, MembersTuple) \
     BOOST_PP_SEQ_FOR_EACH_R(1, CPPAN_DETAIL_DECLARE_ANNOTATION_STRUCT, _, MembersTuple) \
-    CPPAN_DETAIL_DECLARE_MEMBER_SHORTCUTS(Self, MembersTuple) \
+    CPPAN_DETAIL_DECLARE_MEMBER_SHORTCUTS(MembersTuple) \
     CPPAN_ENABLE_BOOST_SERIALIZATION
 
 /// Declare and annotate members with specified types. Accept Boost.Preprocessor sequence of member field declaration.
@@ -66,7 +90,6 @@
 ///struct A
 ///{
 ///    CPPAN_DECLARE_AND_ANNOTATE(
-///        A,
 ///        ((int, int_field_,
 ///            ((int_annotation, 24))
 ///            ((string_annotation, "Privet"))
@@ -79,7 +102,7 @@
 ///      )
 ///};
 /// @endcode
-#define CPPAN_DECLARE_AND_ANNOTATE(Self, MembersSeq) CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(Self, BOOST_PP_SEQ_NIL, MembersSeq)
+#define CPPAN_DECLARE_AND_ANNOTATE(MembersSeq) CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(BOOST_PP_SEQ_NIL, MembersSeq)
 
 /// Define empty annotations sequence
 #define CPPAN_NIL_SEQ BOOST_PP_SEQ_NIL
@@ -139,11 +162,12 @@
 // Produce ", member" or "member" if i is 0
 #  define CPPAN_DETAIL_SHORTCUT(r, self, i, tup) BOOST_PP_COMMA_IF(i) ::cppan::member_shortcut<self, CPPAN_DETAIL_L1_TYPE(tup), &self::CPPAN_DETAIL_L1_MEMBER(tup), CPPAN_DETAIL_ANN_NAME(tup)>
 
-#  define CPPAN_DETAIL_DECLARE_MEMBER_SHORTCUTS(Self, X) \
+#  define CPPAN_DETAIL_DECLARE_MEMBER_SHORTCUTS(X) \
     template<typename T> \
-    struct get_member_shortcuts \
+    struct apply \
     { \
-        typedef boost::mpl::vector<BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_SHORTCUT, T, X)> type; \
+        typedef boost::mpl::vector<BOOST_PP_SEQ_FOR_EACH_I(CPPAN_DETAIL_SHORTCUT, T, X)> self_shortcuts; \
+        typedef typename ::cppan::detail::join_all_shortcuts<base_types, self_shortcuts>::type type; \
     };
 
 #endif // !defined(CPPAN_DOXYGEN)
