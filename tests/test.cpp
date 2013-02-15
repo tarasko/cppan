@@ -1,6 +1,4 @@
 #include <cppan/all.hpp>
-#include <cppan/support/boost_hash.hpp>
-#include <cppan/support/boost_serialization.hpp>
 
 #include <boost/mpl/assert.hpp>
 #include <boost/mpl/begin.hpp>
@@ -76,9 +74,14 @@ int main(int argc, char* argv[])
 {
     B1 b;
 
-    b.int_field_ = 100;
-    b.string_field_ = "string field1";
-    b.no_ann_field_ = 22.;
+    b.int_field_ = 10;
+    b.string_field_ = "test";
+    b.no_ann_field_ = 20.20;
+
+    const char* src = "(40 Hello 30.3)";
+    istringstream iss(src);
+    iss >> b;
+    cout << b;
 
     B1::annotations_for_int_field_ ann1;
     B1::annotations_for_string_field_ ann2;
@@ -117,7 +120,7 @@ int main(int argc, char* argv[])
     D d;
     d.int_field_ = 42;
     d.no_ann_field_ = 15.;
-    d.string_field_ = "fuck";
+    d.string_field_ = "Hello";
     d.b2_mem = 20;
     d.d_mem = 10.;
 
@@ -127,4 +130,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-

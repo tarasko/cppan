@@ -17,9 +17,9 @@ operator<<(std::basic_ostream<Char, Traits>& os, CppanType& value)
 
 template<typename Char, typename Traits, typename CppanType>
 typename boost::enable_if< ::cppan::has_annotations<CppanType>,  std::basic_istream<Char, Traits>& >::type 
-operator<<(std::basic_istream<Char, Traits>& os, CppanType& value)
+operator>>(std::basic_istream<Char, Traits>& is, CppanType& value)
 {
-    return boost::fusion::in(os, value);
+    return boost::fusion::in(is, value);
 }
 
 }
@@ -31,6 +31,13 @@ std::basic_ostream<Char, Traits>& operator<<(std::basic_ostream<Char, Traits>& o
 {
     os << m.value_;
     return os;
+}
+
+template<typename MemberType, typename AnnotationsType, typename Char, typename Traits>
+std::basic_istream<Char, Traits>& operator>>(std::basic_istream<Char, Traits>& is, member<MemberType, AnnotationsType>& m)
+{
+    is >> m.value_;
+    return is;
 }
 
 }

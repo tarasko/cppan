@@ -16,8 +16,12 @@
     ]
 ]
 
-[section Introduction]
+[def __boost_fusion__ [@http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html Boost.Fusion]]
+[def __boost_preprocessor__ [@http://www.boost.org/doc/libs/1_52_0/libs/preprocessor/doc/index.html Boost.Preprocessor]]
+[def __boost_mpl__ [@http://www.boost.org/doc/libs/1_52_0/libs/mpl/doc/index.html Boost.MPL]]
 
+[section Introduction]
+[section Purpose]
 Lacking of introspection and annotations in C++ language is one of reasons that stops people from writing libraries with really convenient interface 
 in some specific domains. Those are: 
 
@@ -39,18 +43,25 @@ Examples are [@http://www.cpgf.org/ cpgf library], [@http://qt-project.org/ Qt] 
 
 The goal of cppan is to provide C++ constructs allowing to associate arbitrary annotations with class members, introspect member is generic way and access annotations during 
 compile and runtime. Library also offer simple integration with Boost.Serialization and Boost.Hash. cppan use 
-[@http://www.boost.org/doc/libs/1_52_0/libs/preprocessor/doc/index.html Boost.Preprocessor] and  
-[@http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html Boost.Fusion] to achieve that goal. 
-
+ __boost_preprocessor__ and __boost_fusion__ to achieve that goal. 
 [endsect]
 
+[section Installation]
+cppan is header-only and depends on __boost_preprocessor__ __boost_fusion__ and __boost_mpl__ libraries. 
+Clone it with
+`git clone git://github.com/tarasko/cppan.git`
+
+[@https://github.com/tarasko/cppan] library repository page
+
+[endsect]
+[endsect]
 [section Tutorial]
 [section Declaring type with annotated members]
 
 Here is how you can declare class members with annotations
 
 ``
-#include <cppan/cppan.hpp>
+#include <cppan/declare_and_annotate.hpp>
 
 struct A
 {
@@ -64,11 +75,11 @@ struct A
             ((no_hash, std::true_type()))
         ))
         ((double, no_ann_field_, CPPAN_NIL_SEQ))
-      )
+    )
 };
 ``
 
-[macroref CPPAN_DECLARE_AND_ANNOTATE] utilize [@http://www.boost.org/doc/libs/1_52_0/libs/preprocessor/doc/index.html Boost.Preprocessor] sequences to declare members, 
+[macroref CPPAN_DECLARE_AND_ANNOTATE] utilize __boost_preprocessor__ sequences to declare members, 
 and sequence of annotations associated with each member. The code above effectively expands into following
 
 ``
@@ -124,44 +135,26 @@ struct A
         annotations_for_no_ann_field_ ()   {}   
     };   
     
-    // --------------------------------------------------------------------------------------------------
-    // typedefs for return type of annotated_tuple const and mutable member functions.
-    // --------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
+    // Following metafunction allow other parts of cppan to introspect members and annotations as fusion sequence
+    // ----------------------------------------------------------------------------------------------------------
     
-    typedef boost::fusion::vector< 
-        ::cppan::annotated_member< int, annotations_for_int_field_> 
-      , ::cppan::annotated_member< std::string, annotations_for_string_field_> 
-      , ::cppan::annotated_member< double, annotations_for_no_ann_field_>  
-      > annotated_tuple_type; 
-    
-    typedef boost::fusion::vector< 
-        ::cppan::annotated_member<const  int, annotations_for_int_field_> 
-      , ::cppan::annotated_member<const  std::string, annotations_for_string_field_> 
-      , ::cppan::annotated_member<const  double, annotations_for_no_ann_field_>  
-      > const_annotated_tuple_type; 
-    
-    // --------------------------------------------------------------------------------------------------
-    // annotated_tuple member function can be used to introspect members with associated annotation type.
-    // --------------------------------------------------------------------------------------------------
-
-    annotated_tuple_type annotated_tuple() 
+    template<typename T> struct apply 
     { 
-        return annotated_tuple_type( int_field_ , string_field_ , no_ann_field_  ); 
-    } 
+        typedef boost::mpl::vector< 
+            ::cppan::detail::member_shortcut<T, int, &T::int_field_, annotations_for_int_field_> 
+          , ::cppan::detail::member_shortcut<T, std::string, &T::string_field_, annotations_for_string_field_> 
+          , ::cppan::detail::member_shortcut<T, double, &T::no_ann_field_, annotations_for_no_ann_field_>  
+          > self_shortcuts; 
         
-    const_annotated_tuple_type annotated_tuple() const 
-    { 
-        return const_annotated_tuple_type( int_field_ , string_field_ , no_ann_field_  ); 
-    }
+        typedef typename ::cppan::detail::join_all_shortcuts<base_types, self_shortcuts>::type type; 
+    };
 };
 ``
-
-[classref cppan::annotated_member] bounds together reference to annotated member and annotations struct type.
-[br ]
-
+As you can see, `apply` metafunction plays key role here. It allows other parts of library introspect members and annotations.
 Using [classref cppan::has_annotations] metafunction, we can test if class member was declared with annotations.  
 ``
-BOOST_MPL_ASSERT((has_annotations<A::annotations_for_string_field_>));
+BOOST_MPL_ASSERT((has_annotations<A>));
 BOOST_MPL_ASSERT_NOT((has_annotations<int>));
 ``
 [endsect]
@@ -198,21 +191,21 @@ BOOST_MPL_ASSERT_NOT((has_no_hash<int>));
 ``
 
 [endsect]
-has_no_hash also contains specialization for [classref cppan::annotated_member annotated_member] class. In that case it will step into annotations type to check presence of 
+has_no_hash also contains specialization for [classref cppan::member member] class. In that case it will step into annotations type to check presence of 
 desired annotation.
 ``
-BOOST_MPL_ASSERT((has_no_hash<cppan::annotated_member< std::string, A::annotations_for_string_field_> >));
-BOOST_MPL_ASSERT_NOT((has_no_hash<cppan::annotated_member< int, A::annotations_for_int_field_> >));
+BOOST_MPL_ASSERT((has_no_hash<cppan::member< std::string, A::annotations_for_string_field_> >));
+BOOST_MPL_ASSERT_NOT((has_no_hash<cppan::member< int, A::annotations_for_int_field_> >));
 ``
 
 [section Introspect members and annotations]
-Power of [@http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html Boost.Fusion] can be applied to  members and annotations since 
-annotated_tuple return [@http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html Boost.Fusion] sequence.
+Power of __boost_fusion__ can be applied to members and annotations since cppan automatically extends it for any type that use [macroref CPPAN_DECLARE_AND_ANNOTATE].
+
 ``
 struct dump_members
 {
     template<typename MemberType, typename AnnotationsType>
-    void operator()(const cppan::annotated_member<MemberType, AnnotationsType>& member) const
+    void operator()(const cppan::member<MemberType, AnnotationsType>& member) const
     {
         cout << "Member value: " << member.value_ << endl;
 
@@ -222,7 +215,78 @@ struct dump_members
 };
 
 ...
-boost::fusion::for_each(a.annotated_tuple(), dump_members());
+boost::fusion::for_each(a, dump_members());
+``
+[endsect]
+
+[section Simple IO with std streams]
+Although __boost_fusion__ provide input/output operator overloads they can't automatically handle sequence types that were declared outside of 
+__boost_fusion__ namespace. cppan provide it`s own header to handle know types.
+
+``
+#include <cppan/io.hpp>
+
+A a;
+const char* src = "(40 Hello 30.3)";
+istringstream iss(src);
+iss >> a;
+cout << a;
+``
+will produce
+``
+(40 Hello 30.3)
+``
+
+[endsect]
+
+[section Making class hierarchies]
+[macroref CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE] can be used to take into account members and annotations declared in base types
+
+``
+#include <cppan/declare_and_annotate.hpp>
+
+struct B1
+{
+    CPPAN_DECLARE_AND_ANNOTATE(
+        ((int, b1,
+            ((b1_ann, 42))
+        ))
+    )
+};
+
+struct B2
+{
+    CPPAN_DECLARE_AND_ANNOTATE(
+        ((int, b2,
+            ((b2_ann, "Hello"))
+        ))
+    )
+};
+
+struct D : B1, B2
+{
+    CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE(
+        (B1)(B2),
+        ((int, d,
+            ((d_ann, std::true_type()))
+        ))
+    )
+};
+``
+
+Now `D` type is viewed by fusion as sequence of b1, b2 and d.
+``
+D d;
+d.b1 = 10;
+d.b2 = 20;
+d.b3 = 30;
+
+cout << d << endl;
+``
+
+will produce
+``
+(10 20 30)
 ``
 
 [endsect]
