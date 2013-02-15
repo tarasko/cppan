@@ -25,6 +25,10 @@
 <p><b>Table of Contents</b></p>
 <dl>
 <dt><span class="section"><a href="index.html#cppan.introduction">Introduction</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="index.html#cppan.introduction.purpose">Purpose</a></span></dt>
+<dt><span class="section"><a href="index.html#cppan.introduction.installation">Installation</a></span></dt>
+</dl></dd>
 <dt><span class="section"><a href="cppan/tutorial.html">Tutorial</a></span></dt>
 <dd><dl>
 <dt><span class="section"><a href="cppan/tutorial.html#cppan.tutorial.declaring_type_with_annotated_me">Declaring
@@ -35,10 +39,18 @@
       member tester metafunction</a></span></dt>
 <dt><span class="section"><a href="cppan/tutorial.html#cppan.tutorial.introspect_members_and_annotatio">Introspect
       members and annotations</a></span></dt>
+<dt><span class="section"><a href="cppan/tutorial.html#cppan.tutorial.simple_io_with_std_streams">Simple IO
+      with std streams</a></span></dt>
+<dt><span class="section"><a href="cppan/tutorial.html#cppan.tutorial.making_class_hierarchies">Making class
+      hierarchies</a></span></dt>
 </dl></dd>
 <dt><span class="section"><a href="reference.html">Reference</a></span></dt>
 <dd><dl>
-<dt><span class="section"><a href="reference.html#header.cppan.cppan_hpp">Header &lt;cppan/cppan.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="reference.html#header.cppan.declare_and_annotate_hpp">Header &lt;cppan/declare_and_annotate.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="reference.html#header.cppan.define_member_detector_hpp">Header &lt;cppan/define_member_detector.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="reference.html#header.cppan.has_annotations_hpp">Header &lt;cppan/has_annotations.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="reference.html#header.cppan.io_hpp">Header &lt;cppan/io.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="reference.html#header.cppan.member_hpp">Header &lt;cppan/member.hpp&gt;</a></span></dt>
 <dt><span class="section"><a href="reference.html#header.cppan.support.boost_hash_hpp">Header &lt;cppan/support/boost_hash.hpp&gt;</a></span></dt>
 <dt><span class="section"><a href="reference.html#header.cppan.support.boost_serialization_hpp">Header &lt;cppan/support/boost_serialization.hpp&gt;</a></span></dt>
 </dl></dd>
@@ -48,63 +60,87 @@
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="cppan.introduction"></a><a class="link" href="index.html#cppan.introduction" title="Introduction">Introduction</a>
 </h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="index.html#cppan.introduction.purpose">Purpose</a></span></dt>
+<dt><span class="section"><a href="index.html#cppan.introduction.installation">Installation</a></span></dt>
+</dl></div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="cppan.introduction.purpose"></a><a class="link" href="index.html#cppan.introduction.purpose" title="Purpose">Purpose</a>
+</h3></div></div></div>
 <p>
-      Lacking of introspection and annotations in C++ language is one of reasons
-      that stops people from writing libraries with really convenient interface in
-      some specific domains. Those are:
-    </p>
+        Lacking of introspection and annotations in C++ language is one of reasons
+        that stops people from writing libraries with really convenient interface
+        in some specific domains. Those are:
+      </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-          Mapping different data sources entities onto c++ class members. These particulary
-          include mapping of database entities, and building orm libraries.
-        </li>
+            Mapping different data sources entities onto c++ class members. These
+            particulary include mapping of database entities, and building orm libraries.
+          </li>
 <li class="listitem">
-          Distributed applications: objects must be serialized and restored with
-          minimal efforts.
-        </li>
+            Distributed applications: objects must be serialized and restored with
+            minimal efforts.
+          </li>
 </ul></div>
 <p>
-      There are two workarounds:
-    </p>
+        There are two workarounds:
+      </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
-          Whenever additional information abount members and types are required,
-          library can ship special template traits class. Develeper can specialize
-          it to make library work with his type correctly. This solution doesn`t
-          involve additional preprocessing tools, however force to duplicate information
-          about class members. <a href="http://www.boost.org/doc/libs/1_52_0/libs/serialization/doc/tutorial.html#simplecase" target="_top">Boost.Serialization</a>
-          is good example of such approach. You have to write those <span class="bold"><strong>serialize</strong></span>
-          functions always. Other representative example is <a href="http://www.webtoolkit.eu/wt/doc/tutorial/dbo/tutorial.html#_mapping_a_single_class" target="_top">Wt.Dbo</a>
-          project.
-        </li>
+            Whenever additional information abount members and types are required,
+            library can ship special template traits class. Develeper can specialize
+            it to make library work with his type correctly. This solution doesn`t
+            involve additional preprocessing tools, however force to duplicate information
+            about class members. <a href="http://www.boost.org/doc/libs/1_52_0/libs/serialization/doc/tutorial.html#simplecase" target="_top">Boost.Serialization</a>
+            is good example of such approach. You have to write those <span class="bold"><strong>serialize</strong></span>
+            functions always. Other representative example is <a href="http://www.webtoolkit.eu/wt/doc/tutorial/dbo/tutorial.html#_mapping_a_single_class" target="_top">Wt.Dbo</a>
+            project.
+          </li>
 <li class="listitem">
-          Additional preprocessing tools, that may use C++ parser to evaluate code
-          structure and generate additional entities. Theses entities can be used
-          to introspect user objects in generic manner. However you need to get these
-          tools installed, since then you can`t just use pure C++ compiler to process
-          your code. Examples are <a href="http://www.cpgf.org/" target="_top">cpgf library</a>,
-          <a href="http://qt-project.org/" target="_top">Qt</a> and <a href="http://www.codesynthesis.com/products/odb/" target="_top">odb</a>
-        </li>
+            Additional preprocessing tools, that may use C++ parser to evaluate code
+            structure and generate additional entities. Theses entities can be used
+            to introspect user objects in generic manner. However you need to get
+            these tools installed, since then you can`t just use pure C++ compiler
+            to process your code. Examples are <a href="http://www.cpgf.org/" target="_top">cpgf
+            library</a>, <a href="http://qt-project.org/" target="_top">Qt</a> and
+            <a href="http://www.codesynthesis.com/products/odb/" target="_top">odb</a>
+          </li>
 </ul></div>
 <p>
-      <br>
-    </p>
+        <br>
+      </p>
 <p>
-      The goal of cppan is to provide C++ constructs allowing to associate arbitrary
-      annotations with class members, introspect member is generic way and access
-      annotations during compile and runtime. Library also offer simple integration
-      with Boost.Serialization and Boost.Hash. cppan use <a href="http://www.boost.org/doc/libs/1_52_0/libs/preprocessor/doc/index.html" target="_top">Boost.Preprocessor</a>
-      and <a href="http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html" target="_top">Boost.Fusion</a>
-      to achieve that goal.
-    </p>
+        The goal of cppan is to provide C++ constructs allowing to associate arbitrary
+        annotations with class members, introspect member is generic way and access
+        annotations during compile and runtime. Library also offer simple integration
+        with Boost.Serialization and Boost.Hash. cppan use <a href="http://www.boost.org/doc/libs/1_52_0/libs/preprocessor/doc/index.html" target="_top">Boost.Preprocessor</a>
+        and <a href="http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html" target="_top">Boost.Fusion</a>
+        to achieve that goal.
+      </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="cppan.introduction.installation"></a><a class="link" href="index.html#cppan.introduction.installation" title="Installation">Installation</a>
+</h3></div></div></div>
+<p>
+        cppan is header-only and depends on <a href="http://www.boost.org/doc/libs/1_52_0/libs/preprocessor/doc/index.html" target="_top">Boost.Preprocessor</a>
+        <a href="http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html" target="_top">Boost.Fusion</a>
+        and <a href="http://www.boost.org/doc/libs/1_52_0/libs/mpl/doc/index.html" target="_top">Boost.MPL</a>
+        libraries. Clone it with <code class="computeroutput"><span class="identifier">git</span> <span class="identifier">clone</span> <span class="identifier">git</span><span class="special">://</span><span class="identifier">github</span><span class="special">.</span><span class="identifier">com</span><span class="special">/</span><span class="identifier">tarasko</span><span class="special">/</span><span class="identifier">cppan</span><span class="special">.</span><span class="identifier">git</span></code>
+      </p>
+<p>
+        <a href="https://github.com/tarasko/cppan" target="_top">https://github.com/tarasko/cppan</a>
+        library repository page
+      </p>
+</div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: February 03, 2013 at 15:22:17 GMT</small></p></td>
+<td align="left"><p><small>Last revised: February 15, 2013 at 20:08:45 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav"><a accesskey="n" href="cppan/tutorial.html"><img src="images/next.png" alt="Next"></a></div>
 </body>
 </html>
-<!-- test -->

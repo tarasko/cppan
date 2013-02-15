@@ -26,6 +26,10 @@
       member tester metafunction</a></span></dt>
 <dt><span class="section"><a href="tutorial.html#cppan.tutorial.introspect_members_and_annotatio">Introspect
       members and annotations</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#cppan.tutorial.simple_io_with_std_streams">Simple IO
+      with std streams</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#cppan.tutorial.making_class_hierarchies">Making class
+      hierarchies</a></span></dt>
 </dl></div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
@@ -35,7 +39,7 @@
 <p>
         Here is how you can declare class members with annotations
       </p>
-<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">cppan</span><span class="special">/</span><span class="identifier">cppan</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">cppan</span><span class="special">/</span><span class="identifier">declare_and_annotate</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
 <span class="keyword">struct</span> <span class="identifier">A</span>
 <span class="special">{</span>
@@ -49,7 +53,7 @@
             <span class="special">((</span><span class="identifier">no_hash</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">true_type</span><span class="special">()))</span>
         <span class="special">))</span>
         <span class="special">((</span><span class="keyword">double</span><span class="special">,</span> <span class="identifier">no_ann_field_</span><span class="special">,</span> <span class="identifier">CPPAN_NIL_SEQ</span><span class="special">))</span>
-      <span class="special">)</span>
+    <span class="special">)</span>
 <span class="special">};</span>
 </pre>
 <p>
@@ -110,47 +114,29 @@
         <span class="identifier">annotations_for_no_ann_field_</span> <span class="special">()</span>   <span class="special">{}</span>
     <span class="special">};</span>
 
-    <span class="comment">// --------------------------------------------------------------------------------------------------</span>
-    <span class="comment">// typedefs for return type of annotated_tuple const and mutable member functions.</span>
-    <span class="comment">// --------------------------------------------------------------------------------------------------</span>
+    <span class="comment">// ----------------------------------------------------------------------------------------------------------</span>
+    <span class="comment">// Following metafunction allow other parts of cppan to introspect members and annotations as fusion sequence</span>
+    <span class="comment">// ----------------------------------------------------------------------------------------------------------</span>
 
-    <span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">fusion</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span>
-        <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">annotated_member</span><span class="special">&lt;</span> <span class="keyword">int</span><span class="special">,</span> <span class="identifier">annotations_for_int_field_</span><span class="special">&gt;</span>
-      <span class="special">,</span> <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">annotated_member</span><span class="special">&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">annotations_for_string_field_</span><span class="special">&gt;</span>
-      <span class="special">,</span> <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">annotated_member</span><span class="special">&lt;</span> <span class="keyword">double</span><span class="special">,</span> <span class="identifier">annotations_for_no_ann_field_</span><span class="special">&gt;</span>
-      <span class="special">&gt;</span> <span class="identifier">annotated_tuple_type</span><span class="special">;</span>
-
-    <span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">fusion</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span>
-        <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">annotated_member</span><span class="special">&lt;</span><span class="keyword">const</span>  <span class="keyword">int</span><span class="special">,</span> <span class="identifier">annotations_for_int_field_</span><span class="special">&gt;</span>
-      <span class="special">,</span> <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">annotated_member</span><span class="special">&lt;</span><span class="keyword">const</span>  <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">annotations_for_string_field_</span><span class="special">&gt;</span>
-      <span class="special">,</span> <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">annotated_member</span><span class="special">&lt;</span><span class="keyword">const</span>  <span class="keyword">double</span><span class="special">,</span> <span class="identifier">annotations_for_no_ann_field_</span><span class="special">&gt;</span>
-      <span class="special">&gt;</span> <span class="identifier">const_annotated_tuple_type</span><span class="special">;</span>
-
-    <span class="comment">// --------------------------------------------------------------------------------------------------</span>
-    <span class="comment">// annotated_tuple member function can be used to introspect members with associated annotation type.</span>
-    <span class="comment">// --------------------------------------------------------------------------------------------------</span>
-
-    <span class="identifier">annotated_tuple_type</span> <span class="identifier">annotated_tuple</span><span class="special">()</span>
+    <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="keyword">struct</span> <span class="identifier">apply</span>
     <span class="special">{</span>
-        <span class="keyword">return</span> <span class="identifier">annotated_tuple_type</span><span class="special">(</span> <span class="identifier">int_field_</span> <span class="special">,</span> <span class="identifier">string_field_</span> <span class="special">,</span> <span class="identifier">no_ann_field_</span>  <span class="special">);</span>
-    <span class="special">}</span>
+        <span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">mpl</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span>
+            <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">detail</span><span class="special">::</span><span class="identifier">member_shortcut</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="keyword">int</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">T</span><span class="special">::</span><span class="identifier">int_field_</span><span class="special">,</span> <span class="identifier">annotations_for_int_field_</span><span class="special">&gt;</span>
+          <span class="special">,</span> <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">detail</span><span class="special">::</span><span class="identifier">member_shortcut</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">T</span><span class="special">::</span><span class="identifier">string_field_</span><span class="special">,</span> <span class="identifier">annotations_for_string_field_</span><span class="special">&gt;</span>
+          <span class="special">,</span> <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">detail</span><span class="special">::</span><span class="identifier">member_shortcut</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="keyword">double</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">T</span><span class="special">::</span><span class="identifier">no_ann_field_</span><span class="special">,</span> <span class="identifier">annotations_for_no_ann_field_</span><span class="special">&gt;</span>
+          <span class="special">&gt;</span> <span class="identifier">self_shortcuts</span><span class="special">;</span>
 
-    <span class="identifier">const_annotated_tuple_type</span> <span class="identifier">annotated_tuple</span><span class="special">()</span> <span class="keyword">const</span>
-    <span class="special">{</span>
-        <span class="keyword">return</span> <span class="identifier">const_annotated_tuple_type</span><span class="special">(</span> <span class="identifier">int_field_</span> <span class="special">,</span> <span class="identifier">string_field_</span> <span class="special">,</span> <span class="identifier">no_ann_field_</span>  <span class="special">);</span>
-    <span class="special">}</span>
+        <span class="keyword">typedef</span> <span class="keyword">typename</span> <span class="special">::</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">detail</span><span class="special">::</span><span class="identifier">join_all_shortcuts</span><span class="special">&lt;</span><span class="identifier">base_types</span><span class="special">,</span> <span class="identifier">self_shortcuts</span><span class="special">&gt;::</span><span class="identifier">type</span> <span class="identifier">type</span><span class="special">;</span>
+    <span class="special">};</span>
 <span class="special">};</span>
 </pre>
 <p>
-        <code class="computeroutput"><a class="link" href="annotated_member.html" title="Struct template annotated_member">cppan::annotated_member</a></code>
-        bounds together reference to annotated member and annotations struct type.
-        <br>
-      </p>
-<p>
-        Using <code class="computeroutput"><a class="link" href="has_annotations.html" title="Struct template has_annotations">cppan::has_annotations</a></code>
+        As you can see, <code class="computeroutput"><span class="identifier">apply</span></code> metafunction
+        plays key role here. It allows other parts of library introspect members
+        and annotations. Using <code class="computeroutput"><a class="link" href="has_annotations.html" title="Struct template has_annotations">cppan::has_annotations</a></code>
         metafunction, we can test if class member was declared with annotations.
       </p>
-<pre class="programlisting"><span class="identifier">BOOST_MPL_ASSERT</span><span class="special">((</span><span class="identifier">has_annotations</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">::</span><span class="identifier">annotations_for_string_field_</span><span class="special">&gt;));</span>
+<pre class="programlisting"><span class="identifier">BOOST_MPL_ASSERT</span><span class="special">((</span><span class="identifier">has_annotations</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">&gt;));</span>
 <span class="identifier">BOOST_MPL_ASSERT_NOT</span><span class="special">((</span><span class="identifier">has_annotations</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;));</span>
 </pre>
 </div>
@@ -196,12 +182,12 @@
 </pre>
 </div>
 <p>
-      has_no_hash also contains specialization for <code class="computeroutput"><a class="link" href="annotated_member.html" title="Struct template annotated_member">annotated_member</a></code>
+      has_no_hash also contains specialization for <code class="computeroutput"><a class="link" href="member.html" title="Struct template member">member</a></code>
       class. In that case it will step into annotations type to check presence of
       desired annotation.
     </p>
-<pre class="programlisting"><span class="identifier">BOOST_MPL_ASSERT</span><span class="special">((</span><span class="identifier">has_no_hash</span><span class="special">&lt;</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">annotated_member</span><span class="special">&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">A</span><span class="special">::</span><span class="identifier">annotations_for_string_field_</span><span class="special">&gt;</span> <span class="special">&gt;));</span>
-<span class="identifier">BOOST_MPL_ASSERT_NOT</span><span class="special">((</span><span class="identifier">has_no_hash</span><span class="special">&lt;</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">annotated_member</span><span class="special">&lt;</span> <span class="keyword">int</span><span class="special">,</span> <span class="identifier">A</span><span class="special">::</span><span class="identifier">annotations_for_int_field_</span><span class="special">&gt;</span> <span class="special">&gt;));</span>
+<pre class="programlisting"><span class="identifier">BOOST_MPL_ASSERT</span><span class="special">((</span><span class="identifier">has_no_hash</span><span class="special">&lt;</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">member</span><span class="special">&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="identifier">A</span><span class="special">::</span><span class="identifier">annotations_for_string_field_</span><span class="special">&gt;</span> <span class="special">&gt;));</span>
+<span class="identifier">BOOST_MPL_ASSERT_NOT</span><span class="special">((</span><span class="identifier">has_no_hash</span><span class="special">&lt;</span><span class="identifier">cppan</span><span class="special">::</span><span class="identifier">member</span><span class="special">&lt;</span> <span class="keyword">int</span><span class="special">,</span> <span class="identifier">A</span><span class="special">::</span><span class="identifier">annotations_for_int_field_</span><span class="special">&gt;</span> <span class="special">&gt;));</span>
 </pre>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
@@ -210,13 +196,13 @@
 </h3></div></div></div>
 <p>
         Power of <a href="http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html" target="_top">Boost.Fusion</a>
-        can be applied to members and annotations since annotated_tuple return <a href="http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html" target="_top">Boost.Fusion</a>
-        sequence.
+        can be applied to members and annotations since cppan automatically extends
+        it for any type that use <code class="computeroutput"><a class="link" href="../CPPAN_DECLARE_AND_ANNOTATE.html" title="Macro CPPAN_DECLARE_AND_ANNOTATE">CPPAN_DECLARE_AND_ANNOTATE</a></code>.
       </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">dump_members</span>
 <span class="special">{</span>
     <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">MemberType</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">AnnotationsType</span><span class="special">&gt;</span>
-    <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">()(</span><span class="keyword">const</span> <span class="identifier">cppan</span><span class="special">::</span><span class="identifier">annotated_member</span><span class="special">&lt;</span><span class="identifier">MemberType</span><span class="special">,</span> <span class="identifier">AnnotationsType</span><span class="special">&gt;&amp;</span> <span class="identifier">member</span><span class="special">)</span> <span class="keyword">const</span>
+    <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">()(</span><span class="keyword">const</span> <span class="identifier">cppan</span><span class="special">::</span><span class="identifier">member</span><span class="special">&lt;</span><span class="identifier">MemberType</span><span class="special">,</span> <span class="identifier">AnnotationsType</span><span class="special">&gt;&amp;</span> <span class="identifier">member</span><span class="special">)</span> <span class="keyword">const</span>
     <span class="special">{</span>
         <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Member value: "</span> <span class="special">&lt;&lt;</span> <span class="identifier">member</span><span class="special">.</span><span class="identifier">value_</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 
@@ -226,7 +212,89 @@
 <span class="special">};</span>
 
 <span class="special">...</span>
-<span class="identifier">boost</span><span class="special">::</span><span class="identifier">fusion</span><span class="special">::</span><span class="identifier">for_each</span><span class="special">(</span><span class="identifier">a</span><span class="special">.</span><span class="identifier">annotated_tuple</span><span class="special">(),</span> <span class="identifier">dump_members</span><span class="special">());</span>
+<span class="identifier">boost</span><span class="special">::</span><span class="identifier">fusion</span><span class="special">::</span><span class="identifier">for_each</span><span class="special">(</span><span class="identifier">a</span><span class="special">,</span> <span class="identifier">dump_members</span><span class="special">());</span>
+</pre>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="cppan.tutorial.simple_io_with_std_streams"></a><a class="link" href="tutorial.html#cppan.tutorial.simple_io_with_std_streams" title="Simple IO with std streams">Simple IO
+      with std streams</a>
+</h3></div></div></div>
+<p>
+        Although <a href="http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html" target="_top">Boost.Fusion</a>
+        provide input/output operator overloads they can't automatically handle sequence
+        types that were declared outside of <a href="http://www.boost.org/doc/libs/1_52_0/libs/fusion/doc/html" target="_top">Boost.Fusion</a>
+        namespace. cppan provide it`s own header to handle know types.
+      </p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">cppan</span><span class="special">/</span><span class="identifier">io</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="identifier">A</span> <span class="identifier">a</span><span class="special">;</span>
+<span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">src</span> <span class="special">=</span> <span class="string">"(40 Hello 30.3)"</span><span class="special">;</span>
+<span class="identifier">istringstream</span> <span class="identifier">iss</span><span class="special">(</span><span class="identifier">src</span><span class="special">);</span>
+<span class="identifier">iss</span> <span class="special">&gt;&gt;</span> <span class="identifier">a</span><span class="special">;</span>
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">a</span><span class="special">;</span>
+</pre>
+<p>
+        will produce
+      </p>
+<pre class="programlisting"><span class="special">(</span><span class="number">40</span> <span class="identifier">Hello</span> <span class="number">30.3</span><span class="special">)</span>
+</pre>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="cppan.tutorial.making_class_hierarchies"></a><a class="link" href="tutorial.html#cppan.tutorial.making_class_hierarchies" title="Making class hierarchies">Making class
+      hierarchies</a>
+</h3></div></div></div>
+<p>
+        <code class="computeroutput"><a class="link" href="../CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE.html" title="Macro CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE">CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE</a></code>
+        can be used to take into account members and annotations declared in base
+        types
+      </p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">cppan</span><span class="special">/</span><span class="identifier">declare_and_annotate</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">struct</span> <span class="identifier">B1</span>
+<span class="special">{</span>
+    <span class="identifier">CPPAN_DECLARE_AND_ANNOTATE</span><span class="special">(</span>
+        <span class="special">((</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">b1</span><span class="special">,</span>
+            <span class="special">((</span><span class="identifier">b1_ann</span><span class="special">,</span> <span class="number">42</span><span class="special">))</span>
+        <span class="special">))</span>
+    <span class="special">)</span>
+<span class="special">};</span>
+
+<span class="keyword">struct</span> <span class="identifier">B2</span>
+<span class="special">{</span>
+    <span class="identifier">CPPAN_DECLARE_AND_ANNOTATE</span><span class="special">(</span>
+        <span class="special">((</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">b2</span><span class="special">,</span>
+            <span class="special">((</span><span class="identifier">b2_ann</span><span class="special">,</span> <span class="string">"Hello"</span><span class="special">))</span>
+        <span class="special">))</span>
+    <span class="special">)</span>
+<span class="special">};</span>
+
+<span class="keyword">struct</span> <span class="identifier">D</span> <span class="special">:</span> <span class="identifier">B1</span><span class="special">,</span> <span class="identifier">B2</span>
+<span class="special">{</span>
+    <span class="identifier">CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE</span><span class="special">(</span>
+        <span class="special">(</span><span class="identifier">B1</span><span class="special">)(</span><span class="identifier">B2</span><span class="special">),</span>
+        <span class="special">((</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">d</span><span class="special">,</span>
+            <span class="special">((</span><span class="identifier">d_ann</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">true_type</span><span class="special">()))</span>
+        <span class="special">))</span>
+    <span class="special">)</span>
+<span class="special">};</span>
+</pre>
+<p>
+        Now <code class="computeroutput"><span class="identifier">D</span></code> type is viewed by fusion
+        as sequence of b1, b2 and d.
+      </p>
+<pre class="programlisting"><span class="identifier">D</span> <span class="identifier">d</span><span class="special">;</span>
+<span class="identifier">d</span><span class="special">.</span><span class="identifier">b1</span> <span class="special">=</span> <span class="number">10</span><span class="special">;</span>
+<span class="identifier">d</span><span class="special">.</span><span class="identifier">b2</span> <span class="special">=</span> <span class="number">20</span><span class="special">;</span>
+<span class="identifier">d</span><span class="special">.</span><span class="identifier">b3</span> <span class="special">=</span> <span class="number">30</span><span class="special">;</span>
+
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">d</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
+<p>
+        will produce
+      </p>
+<pre class="programlisting"><span class="special">(</span><span class="number">10</span> <span class="number">20</span> <span class="number">30</span><span class="special">)</span>
 </pre>
 </div>
 </div>

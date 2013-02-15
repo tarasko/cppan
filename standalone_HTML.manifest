@@ -1,10 +1,10 @@
 index.html
 cppan/tutorial.html
 reference.html
-cppan/annotated_member.html
-cppan/annotated_tuple_type.html
-cppan/annotated_tuple_idp1968576.html
-cppan/has_annotations.html
+CPPAN_ENABLE_BOOST_SERIALIZATION.html
+CPPAN_DECLARE_AND_ANNOTATE_WITH_BASE.html
 CPPAN_DECLARE_AND_ANNOTATE.html
 CPPAN_NIL_SEQ.html
 CPPAN_DEFINE_MEMBER_DETECTOR.html
+cppan/has_annotations.html
+cppan/member.html
