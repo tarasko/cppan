@@ -279,7 +279,7 @@ Now `D` type is viewed by fusion as sequence of b1, b2 and d.
 D d;
 d.b1 = 10;
 d.b2 = 20;
-d.b3 = 30;
+d.d = 30;
 
 cout << d << endl;
 ``
