@@ -3,11 +3,14 @@
 
 #include <cppan/define_member_detector.hpp>
 
-#include <boost/utility/enable_if.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
+#include <boost/fusion/view/filter_view.hpp>
 
-namespace cppan { 
-namespace detail {
+namespace cppan { namespace detail {
+
+#if !defined(CPPAN_DOXYGEN)
+CPPAN_DEFINE_MEMBER_DETECTOR(no_serialization);
+#endif
 
 template<typename Archive>
 struct serialize_visitor
@@ -22,26 +25,8 @@ struct serialize_visitor
         ar_ & member.value_;
     }
 };
-}
 
-#if !defined(CPPAN_DOXYGEN)
-CPPAN_DEFINE_MEMBER_DETECTOR(no_serialization);
-
-#if defined(CPPAN_ENABLE_BOOST_SERIALIZATION)
-#  undef CPPAN_ENABLE_BOOST_SERIALIZATION
-#endif
-
-#define CPPAN_ENABLE_BOOST_SERIALIZATION \
-    friend class boost::serialization::access; \
-    template<typename Archive> \
-    void serialize(Archive& ar, const unsigned int version) \
-    { \
-        ::cppan::serialize(ar, *this, version); \
-    }
-
-#endif
-
-// TODO: Add support for class version
+// TODO: Implement support for class version
 template<typename Archive, typename AnnotatedTuple>
 void serialize(Archive& ar, AnnotatedTuple& t, const unsigned int version)
 {
@@ -56,6 +41,19 @@ void serialize(Archive& ar, AnnotatedTuple& t, const unsigned int version)
       );
 }
 
-}
+}}
+
+#if defined(CPPAN_ENABLE_SERIALIZATION)
+#  undef CPPAN_ENABLE_SERIALIZATION
+#endif
+
+#define CPPAN_ENABLE_SERIALIZATION \
+    friend class boost::serialization::access; \
+    template<typename Archive> \
+    void serialize(Archive& ar, const unsigned int version = 1) \
+    { \
+        ::cppan::detail::serialize(ar, *this, version); \
+    }
 
 #endif
+

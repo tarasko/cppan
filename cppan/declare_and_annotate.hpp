@@ -77,7 +77,7 @@ struct join_all_shortcuts
     BOOST_PP_SEQ_FOR_EACH_R(1, CPPAN_DETAIL_DECLARE_MEMBER, _, MembersTuple) \
     BOOST_PP_SEQ_FOR_EACH_R(1, CPPAN_DETAIL_DECLARE_ANNOTATION_STRUCT, _, MembersTuple) \
     CPPAN_DETAIL_DECLARE_MEMBER_SHORTCUTS(MembersTuple) \
-    CPPAN_ENABLE_BOOST_SERIALIZATION
+    CPPAN_ENABLE_SERIALIZATION
 
 /// Declare and annotate members with specified types. Accept Boost.Preprocessor sequence of member field declaration.
 /// Each element in sequence must be Boost.Preprocessor tuple with 3 elements (member_type, member_name, sequence_of_annotations).

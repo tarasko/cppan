@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 
+option(CPPAN_TEST_YAS "Test yas library support" OFF)
+
 set(cppan_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "cppan include dirs")
 
-find_package(Boost 1.52.0 COMPONENTS serialization REQUIRED)
+find_package(Boost 1.52.0 COMPONENTS serialization unit_test_framework REQUIRED)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 	message("cppan - STANDALONE mode")
@@ -15,6 +17,10 @@ endif()
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
 endif (WIN32)
+
+if (CPPAN_TEST_YAS)
+	add_definitions(-DCPPAN_TEST_YAS)
+endif (CPPAN_TEST_YAS)
 
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -30,8 +36,9 @@ set(sources
   cppan/detail/fusion_extension.hpp
   cppan/support/boost_hash.hpp
   cppan/support/boost_serialization.hpp
+  cppan/support/yas.hpp
 )
-
+ 
 foreach(src ${sources})
 	string(REGEX REPLACE "(.*)/.*" "\\1" dir ${src})
 	string(REPLACE "/" "\\" msvc_folder ${dir})

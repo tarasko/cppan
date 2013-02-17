@@ -1,13 +1,24 @@
 #include <cppan/all.hpp>
+#include <cppan/support/boost_hash.hpp>
+#include <cppan/support/boost_serialization.hpp>
+
+#if defined(CPPAN_TEST_YAS)
+#  include <cppan/support/yas.hpp>
+#  include <yas/text_iarchive.hpp>
+#  include <yas/text_oarchive.hpp>
+#endif
 
 #include <boost/mpl/assert.hpp>
 #include <boost/mpl/begin.hpp>
 #include <boost/mpl/identity.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
 #include <boost/fusion/adapted/mpl.hpp>
+#include <boost/fusion/sequence/comparison.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+
+#include <boost/test/minimal.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -60,6 +71,21 @@ BOOST_MPL_ASSERT_NOT((has_no_hash<int>));
 BOOST_MPL_ASSERT((cppan::has_annotations<B1>));
 BOOST_MPL_ASSERT_NOT((cppan::has_annotations<int>));
 
+void test_io()
+{
+    // serialize
+    const char* src = "(42 Hello 15 20 10)";
+    istringstream iss(src);
+
+    D d;
+    iss >> d;
+
+    ostringstream oss;
+    oss << d;
+
+    BOOST_CHECK(oss.str() == src);
+}
+
 struct dump_members
 {
     template<typename T>
@@ -70,18 +96,13 @@ struct dump_members
     }
 };
 
-int main(int argc, char* argv[])
+void test_basics()
 {
     B1 b;
 
     b.int_field_ = 10;
     b.string_field_ = "test";
     b.no_ann_field_ = 20.20;
-
-    const char* src = "(40 Hello 30.3)";
-    istringstream iss(src);
-    iss >> b;
-    cout << b;
 
     B1::annotations_for_int_field_ ann1;
     B1::annotations_for_string_field_ ann2;
@@ -95,38 +116,83 @@ int main(int argc, char* argv[])
     boost::fusion::for_each(b, dump_members());
     
     const B1& b1 = b;
-    boost::fusion::for_each(b, dump_members());
+    boost::fusion::for_each(b1, dump_members());
+}
 
-    // Calculate hash
-    size_t hash_value = boost::hash_value(b);
-    cout << "Hash: " << hash_value << endl;
+void test_boost_hash()
+{
+    B1 b;
 
-    // Serialize, deserialize object
-    string data;
-    {
-        std::ostringstream oss;
-        boost::archive::text_oarchive oa(oss);
-        oa << const_cast<const B1&>(b);
-        data = oss.str();
-    }
+    b.int_field_ = 10;
+    b.string_field_ = "test";
+    b.no_ann_field_ = 20.20;
+
+    BOOST_CHECK(boost::hash_value(b) == 0xe095b1b6);
+
+    // string_field_ has no_hash and must not be used
+    b.string_field_ = "test1";
+    BOOST_CHECK(boost::hash_value(b) == 0xe095b1b6);
+
+    b.int_field_ = 11;
+    BOOST_CHECK(boost::hash_value(b) != 0xe095b1b6);
+}
+
+void test_boost_serialization()
+{
+    using namespace boost::fusion; // for comparisons operators
+
+    B1 b;
+
+    b.int_field_ = 10;
+    b.string_field_ = "test";
+    b.no_ann_field_ = 20.20;
+
+    std::ostringstream oss;
+    boost::archive::text_oarchive oa(oss);
+    oa << const_cast<const B1&>(b);
 
     B1 b_restored;
-    {
-        std::istringstream iss(data);
-        boost::archive::text_iarchive ia(iss);
-        ia >> b_restored;
-    }
+    std::istringstream iss(oss.str());
+    boost::archive::text_iarchive ia(iss);
+    ia >> b_restored;
 
-    D d;
-    d.int_field_ = 42;
-    d.no_ann_field_ = 15.;
-    d.string_field_ = "Hello";
-    d.b2_mem = 20;
-    d.d_mem = 10.;
+    BOOST_CHECK(b != b_restored);
+    BOOST_CHECK(b.int_field_ == b_restored.int_field_);
+    BOOST_CHECK(b.no_ann_field_ == b_restored.no_ann_field_);
+}
 
-    cout << "D = " << d << endl;
-    cout << "D const = " << (const D&)d << endl;
+void test_yas()
+{
+#if defined(CPPAN_TEST_YAS)
+    using namespace boost::fusion; // for comparisons operators
 
+    B1 b;
 
-	return 0;
+    b.int_field_ = 10;
+    b.string_field_ = "test";
+    b.no_ann_field_ = 20.20;
+
+    // Serialize, deserialize using yas
+    ostringstream oss;
+    yas::text_file_oarchive oa(oss);
+    oa & b;
+
+    B1 b_restored;
+    istringstream iss(oss.str());
+    yas::text_file_iarchive oi(iss);
+    oi & b_restored;
+
+    BOOST_CHECK(b != b_restored);
+#endif
+}
+
+int test_main(int argc, char* argv[])
+{
+    test_basics();
+    test_io();
+    test_boost_hash();
+    test_boost_serialization();
+    test_yas();
+
+    return 0;
 }
